@@ -9,7 +9,6 @@ $(function() {
     canvas.style.width = `400px`;
     canvas.style.height = `300px`;
     ctx.fillStyle = '#ccc';
-    ctx.strokeStyle = 'red';
     ctx.rect(0, 0, 1200, 900);
     ctx.fill();
     ctx.stroke();
@@ -25,29 +24,75 @@ $('#loadButton').click(function(){
     const text = $("#jsonInput").val();
     const parsed = JSON.parse(text);
     $("#nameInput").val(parsed["data"]["name"]);
-    drawName(parsed["data"]["name"]);
-    drawStatus(parsed["data"]["params"]);
-    drawSkills(parsed["data"]["commands"])
+    drawCharadatas(parsed["data"]);
 });
 
-function drawName(name) {
-    var r = /^(.*)（(.*)）$/.exec(name);
-    if(r!=null) return drawNameFurigana(r[1],r[2])
-    ctx.font = '120px soukou';
-    ctx.fillStyle = '#000';
-    ctx.textBaseline = 'center';
-    ctx.textAlign = 'center';
-    ctx.fillText(name, 450, 800);
+async function drawCharadatas(data)
+{
+    await drawIconPicture(data["iconUrl"],data["color"]);
+    drawName(data["name"],"white");
+    drawStatus(data["params"]);
+    drawSkills(data["commands"]);
+}
+
+async function drawIconPicture(url,shadow){
+    var image = new Image();
+    return new Promise(resolve =>{
+        image.onload = function() {
+            var cnvsH = 900;
+            var cnvsW = cnvsH * image.naturalWidth / image.naturalHeight;
+            if(cnvsW > canvas.width)
+            {
+                cnvsW = 1200;
+                cnvsH = cnvsW * image.naturalHeight / image.naturalWidth;
+            }
+            ctx.shadowColor = shadow;
+            var max = 20
+            for (let i = -max; i <= max; i+=2){
+                for (let j = -max; j <= max; j+=2){
+                    ctx.shadowOffsetX = i;
+                    ctx.shadowOffsetY = j;
+                    ctx.drawImage(image, 0, 0, cnvsW, cnvsH);
+                }
+            }
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            resolve();
+        }
+        image.src = url;
+    })
+}
+
+function drawName(name,shadow) {
+    ctx.shadowColor = shadow;
+    ctx.shadowOffsetX = 5;
+    ctx.shadowOffsetY = 5;
+
+    var r = /^(.*) [(（](.*)[)）]$/.exec(name);
+    console.log(r+";"+name)
+    if(r == null) {
+        ctx.font = '120px soukou';
+        ctx.fillStyle = '#000';
+        ctx.textBaseline = 'center';
+        ctx.textAlign = 'center';
+        ctx.fillText(name, 450, 800);
+    }
+    else {
+        drawNameFurigana(r[1],r[2])
+    }
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
 }
 
 function drawNameFurigana(name,furigana)
 {
+    console.log(name+":"+furigana)
     name.split('').forEach(function(val,index,ar){
         ctx.font = '120px soukou';
         ctx.fillStyle = '#000';
         ctx.textBaseline = 'center';
         ctx.textAlign = 'center';
-        ctx.fillText(val, 100+600*index/(ar.length-1), 800);
+        ctx.fillText(val, 100+600*index/(ar.length-1), 850);
     });
     furigana.split('').forEach(function(val,index,ar){
         ctx.font = '40px soukou';

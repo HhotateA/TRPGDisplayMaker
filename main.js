@@ -75,6 +75,8 @@ skillsRect = new Rect(1000,100,1,1)
 grabFlg = 0;
 grabRelativeX = 0
 grabRelativeY = 0
+canvasScale = 3;
+
 $("#preview").mousedown(function(e){
     if(statusRect.contain(e.offsetX*canvasScale,e.offsetY*canvasScale)){
         grabFlg = 1;
@@ -102,8 +104,43 @@ $("#preview").mousedown(function(e){
             break;
     }
 });
+canvas.addEventListener('touchstart',function(e){
+    if(grabFlg != 0) return;
+    if(statusRect.contain(e.offsetX*canvasScale,e.offsetY*canvasScale)){
+        e.preventDefault();
+        grabFlg = 1;
+        [grabRelativeX,grabRelativeY] = statusRect.pos(e.offsetX*canvasScale,e.offsetY*canvasScale);
+    }else if(skillsRect.contain(e.offsetX*canvasScale,e.offsetY*canvasScale)){
+        e.preventDefault();
+        grabFlg = 2;
+        [grabRelativeX,grabRelativeY] = skillsRect.pos(e.offsetX*canvasScale,e.offsetY*canvasScale);
+    }
+});
+canvas.addEventListener('touchend',function(e){
+    if(e.changedTouches.length != 0) return;
+    e.preventDefault();
+    grabFlg = 0; // マウス押下終了
+    drawCanvas();
+});
+canvas.addEventListener('touchmove',function(e){
+    switch(grabFlg){
+        case 0:
+            break;
+        case 1:
+            e.preventDefault();
+            statusRect.x = e.offsetX*canvasScale-grabRelativeX;
+            statusRect.y = e.offsetY*canvasScale-grabRelativeY;
+            statusRect = drawStatus(getData()["params"],statusRect.x,statusRect.y,40);
+            break;
+        case 2:
+            e.preventDefault();
+            skillsRect.x = e.offsetX*canvasScale-grabRelativeX;
+            skillsRect.y = e.offsetY*canvasScale-grabRelativeY;
+            skillsRect = drawSkills(getData()["commands"],skillsRect.x,skillsRect.y,40);
+            break;
+    }
+});
 
-canvasScale = 3;
 function resetCanvas(){
     canvas.width = 1200;
     canvas.height = 900;

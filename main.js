@@ -30,7 +30,7 @@ $('#loadButton').click(function(){
 });
 
 $('#download').click(function(){
-    var base64 = canvas.toDataURL("image/png");
+    var base64 = canvas.toDataURL();
     document.getElementById("download").href = base64;
 });
 
@@ -112,6 +112,7 @@ async function drawIconPicture(url,shadow){
             ctx.shadowOffsetY = 0;
             resolve();
         }
+        image.crossOrigin = "anonymous";
         image.src = url;
     })
 }

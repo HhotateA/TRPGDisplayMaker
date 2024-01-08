@@ -29,6 +29,11 @@ $('#loadButton').click(function(){
     drawCanvas();
 });
 
+$('#download').click(function(){
+    var base64 = canvas.toDataURL("image/png");
+    document.getElementById("download").href = base64;
+});
+
 $('#imageInput').change(function(){
     if (!this.files.length) {
         alert('File Not Selected');

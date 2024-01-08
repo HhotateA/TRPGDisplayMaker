@@ -7,7 +7,8 @@
   </head>
   <body>
     <h1>TRPGディスプレイメーカー</h1>
-    <canvas id="preview"></canvas>
+    <a id="download" href="#" download="chara.png"><canvas id="preview"></canvas></a>
+  
     <p>
         <input type="text" id="jsonInput" value='{"kind":"character","data":{"name":"猫魔 ツグミ","initiative":18,"externalUrl":"https://iachara.com/view/2859618","iconUrl":"https://image.iaproject.app/2859618.png","commands":"1d100<={SAN} 【正気度ロール】\nCCB<=65 【アイデア】\nCCB<=70 【幸運】\nCCB<=80 【知識】\nCCB<=85 【目星】\nCCB<=90 【聞き耳】\nCCB<=80 【図書館】\nCCB<=41 【回避】\nCCB<=50 【こぶし（パンチ）】\nCCB<=50 【組み付き】\nCCB<=40 【応急手当】\nCCB<=75 【隠す】\nCCB<=60 【隠れる】\nCCB<=16 【忍び歩き】\nCCB<=50 【登攀】\nCCB<=24 【製作（お菓子作り）】\nCCB<=16 【ナビゲート】\nCCB<=65 【変装】\nCCB<=75 【説得】\nCCB<=15 【クトゥルフ神話】\nCCB<=91 【芸術（紙の舌）】\nCCB<=3 【コンピューター】\nCCB<=12 【心理学】\nCCB<=25 【人類学】\nCCB<=20 【天文学】\n1d3+0 【ダメージ判定】\n1d4+0 【ダメージ判定】\n1d6+0 【ダメージ判定】\nCCB<={STR}*5 【STR × 5】\nCCB<={CON}*5 【CON × 5】\nCCB<={POW}*5 【POW × 5】\nCCB<={DEX}*5 【DEX × 5】\nCCB<={APP}*5 【APP × 5】\nCCB<={SIZ}*5 【SIZ × 5】\nCCB<={INT}*5 【INT × 5】\nCCB<={EDU}*5 【EDU × 5】\n","status":[{"label":"HP","value":10,"max":10},{"label":"MP","value":14,"max":14},{"label":"SAN","value":64,"max":64}],"params":[{"label":"STR","value":"11"},{"label":"CON","value":"10"},{"label":"POW","value":"14"},{"label":"DEX","value":"18"},{"label":"APP","value":"20"},{"label":"SIZ","value":"9"},{"label":"INT","value":"13"},{"label":"EDU","value":"16"}],"color":"#cf0c0c"}}' >
         <button id="loadButton" name="loadButton">キャラデータ読み込み</button>

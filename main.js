@@ -72,7 +72,7 @@ async function drawCharadatas(data)
 {
     drawBackGround(backGround);
     await drawIconPicture(data["iconUrl"],data["color"]);
-    drawName(data["name"],"white");
+    drawName(data["name"],"white",450,800,120);
     drawStatus(data["params"],600,100,40);
     drawSkills(data["commands"],1000,100,40);
 }
@@ -117,41 +117,41 @@ async function drawIconPicture(url,shadow){
     })
 }
 
-function drawName(name,shadow) {
+function drawName(name,shadow,posx,posy,size) {
     ctx.shadowColor = shadow;
     ctx.shadowOffsetX = 5;
     ctx.shadowOffsetY = 5;
     var r = /(.*?)\s?[(（](.*?)[)）]/.exec(name);
     console.log(r+";"+name)
     if(r == null) {
-        ctx.font = '120px ' + font ;
+        ctx.font = size + 'px ' + font ;
         ctx.fillStyle = '#000';
         ctx.textBaseline = 'center';
         ctx.textAlign = 'center';
-        ctx.fillText(name, 450, 800);
+        ctx.fillText(name, posx, posy);
     }
     else {
-        drawNameFurigana(r[1],r[2])
+        drawNameFurigana(r[1],r[2],posx,posy,size)
     }
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
 }
 
-function drawNameFurigana(name,furigana)
+function drawNameFurigana(name,furigana,posx,posy,size)
 {
     name.split('').forEach(function(val,index,ar){
-        ctx.font = '120px ' + font ;
+        ctx.font = size + 'px ' + font ;
         ctx.fillStyle = '#000';
         ctx.textBaseline = 'center';
         ctx.textAlign = 'center';
-        ctx.fillText(val, 100+600*index/(ar.length-1), 850);
+        ctx.fillText(val, (posx-size*name.length/2) + size*name.length * index/(ar.length-1), posy);
     });
     furigana.split('').forEach(function(val,index,ar){
-        ctx.font = '40px ' + font ;
+        ctx.font = size/3 + 'px ' + font ;
         ctx.fillStyle = '#000';
         ctx.textBaseline = 'center';
         ctx.textAlign = 'center';
-        ctx.fillText(val, 100+600*index/(ar.length-1), 700);
+        ctx.fillText(val, (posx-size*name.length/2) + size*name.length * index/(ar.length-1), posy-150);
     });
 }
 

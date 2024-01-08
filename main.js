@@ -68,8 +68,7 @@ function drawCanvas(){
     drawCharadatas(parsed["data"]);
 }
 
-async function drawCharadatas(data)
-{
+async function drawCharadatas(data){
     drawBackGround(backGround);
     await drawIconPicture(data["iconUrl"],data["color"]);
     drawName(data["name"],"white",450,800,120);
@@ -101,13 +100,16 @@ async function drawIconPicture(url,shadow){
             }
             ctx.shadowColor = shadow;
             var max = 20
-            for (let i = -max; i <= max; i+=2){
+            ctx.shadowOffsetX = 15;
+            ctx.shadowOffsetY = 15;
+            ctx.drawImage(image, 0, 0, cnvsW, cnvsH);
+            /*for (let i = -max; i <= max; i+=2){
                 for (let j = -max; j <= max; j+=2){
                     ctx.shadowOffsetX = i;
                     ctx.shadowOffsetY = j;
                     ctx.drawImage(image, 0, 0, cnvsW, cnvsH);
                 }
-            }
+            }*/
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
             resolve();
@@ -161,28 +163,29 @@ function drawStatus(status,posx,posy,size) {
     ctx.fillRect(posx-size*1.5, posy-size*1.25, size*1.25*2+size*3, size*1.25*(status.length-1)+size*1.5);
 
     status.forEach(function(val,index,ar){
-        ctx.font = size + 'px ' + font ;
+        ctx.font = size*2/val["label"].length + 'px ' + font ;
         ctx.fillStyle = '#000';
         ctx.textBaseline = 'center';
         ctx.textAlign = 'center';
         ctx.fillText(val["label"], posx, posy+size*1.25*index);
+        ctx.font = size + 'px ' + font ;
         ctx.fillText(val["value"], posx+size*1.25*2, posy+size*1.25*index);
     });
 }
 
 function drawSkills(command,posx,posy,size) {
-    var cs = command.match(/\nCCB?<=(\d+) 【(.*?)】\n/g).map(item =>{
-        var r = /\nCCB?<=(\d+) 【(.*?)】\n/g.exec(item);
+    var cs = command.match(/^CCB?<=(\d+) 【(.*?)】$/gm).map(item =>{
+        var r = /^CCB?<=(\d+) 【(.*?)】$/.exec(item);
         return {"label":r[2],"value":r[1]};
     }).filter(item=>{
         // フィルターに一致する項目は排除
         return commandFilter.every(f => f != item["label"]);
     }).sort(function(a,b){
-        if(a["value"] < b["value"]) return 1;
-        if(a["value"] > b["value"]) return -1;
+        if(Number(a["value"]) < Number(b["value"])) return 1;
+        if(Number(a["value"]) > Number(b["value"])) return -1;
         return 0;
     });
-    cs.length = Math.min(cs.length,17);
+    cs.length = Math.min(cs.length,15);
 
     drawStatus(cs,posx,posy,size)
 }

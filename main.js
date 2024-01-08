@@ -120,12 +120,14 @@ function drawCanvas(){
     drawCharadatas(data);
 }
 
+// 入力された文字列をJsonに分解
 function getData(){
     const text = $("#jsonInput").val();
     const parsed = JSON.parse(text);
     return parsed["data"];
 }
 
+// キャラクターデータを一括で描写する
 async function drawCharadatas(data){
     drawBackGround(backGround);
     await drawIconPicture(data["iconUrl"],data["color"]);
@@ -134,6 +136,7 @@ async function drawCharadatas(data){
     skillsRect = drawSkills(data["commands"],skillsRect.x,skillsRect.y,40);
 }
 
+// 背景画像の描写
 function drawBackGround(image){
     var cnvsH = 900;
     var cnvsW = cnvsH * image.naturalWidth / image.naturalHeight;
@@ -145,6 +148,7 @@ function drawBackGround(image){
     ctx.drawImage(image, (1200-cnvsW)/2, (900-cnvsH)/2, cnvsW, cnvsH);
 }
 
+// キャラクター立ち絵の描写
 async function drawIconPicture(url,shadow){
     var image = new Image();
     return new Promise(resolve =>{
@@ -161,6 +165,7 @@ async function drawIconPicture(url,shadow){
             ctx.shadowOffsetX = 15;
             ctx.shadowOffsetY = 15;
             ctx.drawImage(image, 0, 0, cnvsW, cnvsH);
+            // 影を一様に入れる処理（重いので一時無効）
             /*for (let i = -max; i <= max; i+=2){
                 for (let j = -max; j <= max; j+=2){
                     ctx.shadowOffsetX = i;
@@ -177,12 +182,14 @@ async function drawIconPicture(url,shadow){
     })
 }
 
+// 名前の描写
 function drawName(name,shadow,posx,posy,size) {
     ctx.shadowColor = shadow;
     ctx.shadowOffsetX = 5;
     ctx.shadowOffsetY = 5;
     var r = /(.*?)\s?[(（](.*?)[)）]/.exec(name);
     if(r == null) {
+        // ふり仮名がなかった場合、このまま描写
         ctx.font = size + 'px ' + font ;
         ctx.fillStyle = '#000';
         ctx.textBaseline = 'center';
@@ -190,14 +197,17 @@ function drawName(name,shadow,posx,posy,size) {
         ctx.fillText(name, posx, posy);
     }
     else {
+        // ふり仮名があった場合
         drawNameFurigana(r[1],r[2],posx,posy,size)
     }
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
 }
 
+// ふり仮名と名前の描写
 function drawNameFurigana(name,furigana,posx,posy,size)
 {
+    // 名前の描写
     name.split('').forEach(function(val,index,ar){
         ctx.font = size + 'px ' + font ;
         ctx.fillStyle = '#000';
@@ -205,6 +215,8 @@ function drawNameFurigana(name,furigana,posx,posy,size)
         ctx.textAlign = 'center';
         ctx.fillText(val, (posx-size*name.length/2) + size*name.length * index/(ar.length-1), posy+size/2);
     });
+
+    // ふり仮名の描写
     furigana.split('').forEach(function(val,index,ar){
         ctx.font = size/3 + 'px ' + font ;
         ctx.fillStyle = '#000';
@@ -214,6 +226,7 @@ function drawNameFurigana(name,furigana,posx,posy,size)
     });
 }
 
+// ステータス系の描写
 function drawStatus(status,posx,posy,size) {
     ctx.beginPath();
     ctx.fillStyle = "rgba(" + [255, 255, 255, 0.3] + ")";
@@ -231,16 +244,19 @@ function drawStatus(status,posx,posy,size) {
     return new Rect(posx, posy, size*1.25*2+size*3, size*1.25*(status.length-1)+size*1.5);
 }
 
+// 技能コマンドの分解
 function drawSkills(command,posx,posy,size) {
     var cs = command.match(/^CCB?<=(\d+) 【(.*?)】$/gm).map(item =>{
+        // 正規表現で、ラベルと技能値を分解
         var r = /^CCB?<=(\d+) 【(.*?)】$/.exec(item);
-        return {"label":r[2],"value":r[1]};
+        return {"label":r[2],"value":Number(r[1])};
     }).filter(item=>{
         // フィルターに一致する項目は排除
         return commandFilter.every(f => f != item["label"]);
     }).sort(function(a,b){
-        if(Number(a["value"]) < Number(b["value"])) return 1;
-        if(Number(a["value"]) > Number(b["value"])) return -1;
+        // 技能値の高い順に並べ替え
+        if(a["value"] < b["value"]) return 1;
+        if(a["value"] > b["value"]) return -1;
         return 0;
     });
     cs.length = Math.min(cs.length,15);

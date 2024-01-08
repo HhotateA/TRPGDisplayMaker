@@ -4,6 +4,25 @@ const commandFilter = ["正気度ロール","アイデア","幸運","知識","ST
 font = "arial"
 backGround = new Image();
 
+class Rect {
+    constructor(x = 0, y = 0, w = 0, h = 0) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+    }
+    contain(offsetX,offsetY){
+        if(this.x>offsetX) return false;
+        if(this.x+this.w<offsetX) return false;
+        if(this.y>offsetY) return false;
+        if(this.y+this.h<offsetY) return false;
+        return true;
+    }
+    pos(offsetX,offsetY){
+        return [offsetX-this.x, offsetY-this.y];
+    }
+}
+
 $(function() {
     loadFont("soukou","装甲明朝","url(fonts/SoukouMincho-Font/SoukouMincho.ttf)");
     loadFont("LanobePOP","ラノベPOP","url(fonts/LanobePOPv2/LightNovelPOPv2.otf)");
@@ -51,11 +70,45 @@ $('#imageInput').change(function(){
     fr.readAsDataURL(file);
 });
 
+statusRect = new Rect(600,100,1,1)
+skillsRect = new Rect(1000,100,1,1)
+grabFlg = 0;
+grabRelativeX = 0
+grabRelativeY = 0
+$("#preview").mousedown(function(e){
+    if(statusRect.contain(e.offsetX*canvasScale,e.offsetY*canvasScale)){
+        grabFlg = 1;
+        [grabRelativeX,grabRelativeY] = statusRect.pos(e.offsetX*canvasScale,e.offsetY*canvasScale);
+    }else if(skillsRect.contain(e.offsetX*canvasScale,e.offsetY*canvasScale)){
+        grabFlg = 2;
+        [grabRelativeX,grabRelativeY] = skillsRect.pos(e.offsetX*canvasScale,e.offsetY*canvasScale);
+    }
+}).mouseup(function(e){
+    grabFlg = 0; // マウス押下終了
+    drawCanvas();
+}).mousemove(function(e){
+    switch(grabFlg){
+        case 0:
+            break;
+        case 1:
+            statusRect.x = e.offsetX*canvasScale-grabRelativeX;
+            statusRect.y = e.offsetY*canvasScale-grabRelativeY;
+            statusRect = drawStatus(getData()["params"],statusRect.x,statusRect.y,40);
+            break;
+        case 2:
+            skillsRect.x = e.offsetX*canvasScale-grabRelativeX;
+            skillsRect.y = e.offsetY*canvasScale-grabRelativeY;
+            skillsRect = drawSkills(getData()["commands"],skillsRect.x,skillsRect.y,40);
+            break;
+    }
+});
+
+canvasScale = 3;
 function resetCanvas(){
     canvas.width = 1200;
     canvas.height = 900;
-    canvas.style.width = `400px`;
-    canvas.style.height = `300px`;
+    canvas.style.width = canvas.width/canvasScale+`px`;
+    canvas.style.height = canvas.height/canvasScale+`px`;
     ctx.beginPath();
     ctx.fillStyle = '#ccc';
     ctx.fillRect(0, 0, 1200, 900);
@@ -63,17 +116,22 @@ function resetCanvas(){
 
 function drawCanvas(){
     resetCanvas();
+    data = getData();
+    drawCharadatas(data);
+}
+
+function getData(){
     const text = $("#jsonInput").val();
     const parsed = JSON.parse(text);
-    drawCharadatas(parsed["data"]);
+    return parsed["data"];
 }
 
 async function drawCharadatas(data){
     drawBackGround(backGround);
     await drawIconPicture(data["iconUrl"],data["color"]);
     drawName(data["name"],"white",450,800,120);
-    drawStatus(data["params"],600,100,40);
-    drawSkills(data["commands"],1000,100,40);
+    statusRect = drawStatus(data["params"],statusRect.x,statusRect.y,40);
+    skillsRect = drawSkills(data["commands"],skillsRect.x,skillsRect.y,40);
 }
 
 function drawBackGround(image){
@@ -84,7 +142,7 @@ function drawBackGround(image){
         cnvsW = 1200;
         cnvsH = cnvsW * image.naturalHeight / image.naturalWidth;
     }
-    ctx.drawImage(image, 0, 0, cnvsW, cnvsH);
+    ctx.drawImage(image, (1200-cnvsW)/2, (900-cnvsH)/2, cnvsW, cnvsH);
 }
 
 async function drawIconPicture(url,shadow){
@@ -124,7 +182,6 @@ function drawName(name,shadow,posx,posy,size) {
     ctx.shadowOffsetX = 5;
     ctx.shadowOffsetY = 5;
     var r = /(.*?)\s?[(（](.*?)[)）]/.exec(name);
-    console.log(r+";"+name)
     if(r == null) {
         ctx.font = size + 'px ' + font ;
         ctx.fillStyle = '#000';
@@ -146,31 +203,32 @@ function drawNameFurigana(name,furigana,posx,posy,size)
         ctx.fillStyle = '#000';
         ctx.textBaseline = 'center';
         ctx.textAlign = 'center';
-        ctx.fillText(val, (posx-size*name.length/2) + size*name.length * index/(ar.length-1), posy);
+        ctx.fillText(val, (posx-size*name.length/2) + size*name.length * index/(ar.length-1), posy+size/2);
     });
     furigana.split('').forEach(function(val,index,ar){
         ctx.font = size/3 + 'px ' + font ;
         ctx.fillStyle = '#000';
         ctx.textBaseline = 'center';
         ctx.textAlign = 'center';
-        ctx.fillText(val, (posx-size*name.length/2) + size*name.length * index/(ar.length-1), posy-150);
+        ctx.fillText(val, (posx-size*name.length/2) + size*name.length * index/(ar.length-1), posy-150+size/2);
     });
 }
 
 function drawStatus(status,posx,posy,size) {
     ctx.beginPath();
     ctx.fillStyle = "rgba(" + [255, 255, 255, 0.3] + ")";
-    ctx.fillRect(posx-size*1.5, posy-size*1.25, size*1.25*2+size*3, size*1.25*(status.length-1)+size*1.5);
+    ctx.fillRect(posx, posy, size*1.25*2+size*3, size*1.25*(status.length-1)+size*1.5);
 
     status.forEach(function(val,index,ar){
         ctx.font = size*2/val["label"].length + 'px ' + font ;
         ctx.fillStyle = '#000';
         ctx.textBaseline = 'center';
         ctx.textAlign = 'center';
-        ctx.fillText(val["label"], posx, posy+size*1.25*index);
+        ctx.fillText(val["label"], posx+size*1.5, posy+size*1.25+size*1.25*index);
         ctx.font = size + 'px ' + font ;
-        ctx.fillText(val["value"], posx+size*1.25*2, posy+size*1.25*index);
+        ctx.fillText(val["value"], posx+size*1.5+size*1.25*2, posy+size*1.25+size*1.25*index);
     });
+    return new Rect(posx, posy, size*1.25*2+size*3, size*1.25*(status.length-1)+size*1.5);
 }
 
 function drawSkills(command,posx,posy,size) {
@@ -187,5 +245,5 @@ function drawSkills(command,posx,posy,size) {
     });
     cs.length = Math.min(cs.length,15);
 
-    drawStatus(cs,posx,posy,size)
+    return drawStatus(cs,posx,posy,size)
 }

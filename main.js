@@ -142,7 +142,7 @@ function perseNameFurigana(name){
         // ふり仮名があった場合
         return [r[1],r[2]]
     }
-    return [r[1],""]
+    return [name,""]
 }
 
 // キャラクター立ち絵の描写

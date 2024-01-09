@@ -21,6 +21,21 @@ class Rect {
     pos(offsetX,offsetY){
         return [offsetX-this.x, offsetY-this.y];
     }
+    extend(rect){
+        var xmin = Math.min(this.x,this.x+this.w,rect.x,rect.x+rect.w);
+        var ymin = Math.min(this.y,this.y+this.h,rect.y,rect.y+rect.h);
+        var xmax = Math.max(this.x,this.x+this.w,rect.x,rect.x+rect.w);
+        var ymax = Math.max(this.y,this.y+this.h,rect.y,rect.y+rect.h);
+        return new Rect(xmin,ymin,xmax-xmin,ymax-ymin);
+    }
+    copyTo(xInput,yInput){
+        xInput.val(this.x);
+        yInput.val(this.y);
+    }
+    copyFrom(xInput,yInput){
+        this.x = xInput.val();
+        this.y = yInput.val();
+    }
 }
 
 $(function() {
@@ -70,22 +85,26 @@ $('#imageInput').change(function(){
     fr.readAsDataURL(file);
 });
 
-statusRect = new Rect(600,100,1,1)
-skillsRect = new Rect(1000,100,1,1)
+statusRect = new Rect(50,450,1,1)
+skillsRect = new Rect(700,100,1,1)
+nameRect = new Rect(500,700,1,1)
 grabFlg = 0;
 grabRelativeX = 0
 grabRelativeY = 0
 canvasScale = 3;
 
 $("#preview").mousedown(function(e){
-    var pos = [e.offsetX*canvasScale,e.offsetY*canvasScale];
     if(grabFlg != 0) return;
-    if(statusRect.contain(pos[0],pos[1])){
+    var pos = [e.offsetX*canvasScale,e.offsetY*canvasScale];
+    if(statusRect.contain(pos[0],pos[1]) && $("#statusToggle").prop('checked')){
         grabFlg = 1;
         [grabRelativeX,grabRelativeY] = statusRect.pos(pos[0],pos[1]);
     }else if(skillsRect.contain(pos[0],pos[1])){
         grabFlg = 2;
         [grabRelativeX,grabRelativeY] = skillsRect.pos(pos[0],pos[1]);
+    }else if(nameRect.contain(pos[0],pos[1])){
+        grabFlg = 3;
+        [grabRelativeX,grabRelativeY] = nameRect.pos(pos[0],pos[1]);
     }
 }).mouseup(function(e){
     grabFlg = 0; // マウス押下終了
@@ -99,17 +118,23 @@ $("#preview").mousedown(function(e){
             statusRect.x = pos[0]-grabRelativeX;
             statusRect.y = pos[1]-grabRelativeY;
             statusRect = drawStatus(getData()["params"],statusRect.x,statusRect.y,40);
+            statusRect.copyTo($("#statusXInput"),$("#statusYInput"));
             break;
         case 2:
             skillsRect.x = pos[0]-grabRelativeX;
             skillsRect.y = pos[1]-grabRelativeY;
             skillsRect = drawSkills(getData()["commands"],skillsRect.x,skillsRect.y,40);
             break;
+        case 3:
+            nameRect.x = pos[0]-grabRelativeX;
+            nameRect.y = pos[1]-grabRelativeY;
+            nameRect = drawName(getData()["name"],"white",nameRect.x,nameRect.y,120);
+            break;
     }
 });
 canvas.addEventListener('touchstart',function(e){
-    var pos = [e.changedTouches[0].clientX*canvasScale,e.changedTouches[0].clientY*canvasScale];
     if(grabFlg != 0) return;
+    var pos = [e.changedTouches[0].clientX*canvasScale,e.changedTouches[0].clientY*canvasScale];
     if(statusRect.contain(pos[0],pos[1])){
         e.preventDefault();
         grabFlg = 1;
@@ -172,7 +197,7 @@ function getData(){
 async function drawCharadatas(data){
     drawBackGround(backGround);
     await drawIconPicture(data["iconUrl"],data["color"]);
-    drawName(data["name"],"white",450,800,120);
+    nameRect = drawName(data["name"],"white",nameRect.x,nameRect.y,120);
     statusRect = drawStatus(data["params"],statusRect.x,statusRect.y,40);
     skillsRect = drawSkills(data["commands"],skillsRect.x,skillsRect.y,40);
 }
@@ -229,20 +254,19 @@ function drawName(name,shadow,posx,posy,size) {
     ctx.shadowOffsetX = 5;
     ctx.shadowOffsetY = 5;
     var r = /(.*?)\s?[(（](.*?)[)）]/.exec(name);
-    if(r == null) {
-        // ふり仮名がなかった場合、このまま描写
-        ctx.font = size + 'px ' + font ;
-        ctx.fillStyle = '#000';
-        ctx.textBaseline = 'center';
-        ctx.textAlign = 'center';
-        ctx.fillText(name, posx, posy);
-    }
-    else {
+    if(r != null) {
         // ふり仮名があった場合
-        drawNameFurigana(r[1],r[2],posx,posy,size)
+        return drawNameFurigana(r[1],r[2],posx,posy,size)
     }
+    // ふり仮名がなかった場合、このまま描写
+    ctx.font = size + 'px ' + font ;
+    ctx.fillStyle = '#000';
+    ctx.textBaseline = 'center';
+    ctx.textAlign = 'center';
+    ctx.fillText(name, posx, posy);
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
+    return new Rect(posx,posy,size*name.length,size);
 }
 
 // ふり仮名と名前の描写
@@ -254,7 +278,7 @@ function drawNameFurigana(name,furigana,posx,posy,size)
         ctx.fillStyle = '#000';
         ctx.textBaseline = 'center';
         ctx.textAlign = 'center';
-        ctx.fillText(val, (posx-size*name.length/2) + size*name.length * index/(ar.length-1), posy+size/2);
+        ctx.fillText(val, posx + name.length*size * index/(ar.length-1), posy+size);
     });
 
     // ふり仮名の描写
@@ -263,22 +287,25 @@ function drawNameFurigana(name,furigana,posx,posy,size)
         ctx.fillStyle = '#000';
         ctx.textBaseline = 'center';
         ctx.textAlign = 'center';
-        ctx.fillText(val, (posx-size*name.length/2) + size*name.length * index/(ar.length-1), posy-150+size/2);
+        ctx.fillText(val, posx + name.length*size * index/(ar.length-1), posy);
     });
+    return new Rect(posx,posy,size*name.length,size);
 }
 
 // ステータス系の描写
 function drawStatus(status,posx,posy,size) {
     ctx.beginPath();
+    ctx.textBaseline = 'center';
+    ctx.textAlign = 'center';
     ctx.fillStyle = "rgba(" + [255, 255, 255, 0.3] + ")";
     ctx.fillRect(posx, posy, size*1.25*2+size*3, size*1.25*(status.length-1)+size*1.5);
 
     status.forEach(function(val,index,ar){
-        ctx.font = size*2/val["label"].length + 'px ' + font ;
+        ctx.font = size + 'px ' + font ;
         ctx.fillStyle = '#000';
         ctx.textBaseline = 'center';
         ctx.textAlign = 'center';
-        ctx.fillText(val["label"], posx+size*1.5, posy+size*1.25+size*1.25*index);
+        ctx.fillText(val["label"], posx+size*1.5, posy+size*1.25+size*1.25*index, size*2.5);
         ctx.font = size + 'px ' + font ;
         ctx.fillText(val["value"], posx+size*1.5+size*1.25*2, posy+size*1.25+size*1.25*index);
     });
@@ -300,7 +327,15 @@ function drawSkills(command,posx,posy,size) {
         if(a["value"] > b["value"]) return -1;
         return 0;
     });
-    cs.length = Math.min(cs.length,15);
 
-    return drawStatus(cs,posx,posy,size)
+    if(cs.length<7){
+        return drawStatus(cs,posx,posy,size)
+    }else{
+        cs.length = Math.min(cs.length,20);
+        if(cs.length%2==0) cs.length = cs.length-1;
+        var a = drawStatus(cs.slice(0,cs.length/2),posx,posy,size);
+        var b = drawStatus(cs.slice(cs.length/2+1,cs.length),posx+size*5.5,posy,size);
+        return a.extend(b);
+    }
+
 }

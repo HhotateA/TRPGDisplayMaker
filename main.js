@@ -362,18 +362,24 @@ function drawIconPicture(image,posx,posy,size,shadow){
 // ふり仮名と名前の描写
 function drawNameFurigana(name,furigana,posx,posy,size,shadow)
 {
+    if(name.length == 1)
+    {
+        drawText(name,font,size,posx + size/2, posy+size*1.5,'#000',shadow,3);
+        // ふり仮名の描写
+        furigana.split('').forEach(function(val,index,ar){
+            drawText(val,font,size/3,posx + name.length*size * index/(ar.length-1), posy+size*0.5,'#000',shadow,1);
+        });
+        return new Rect(posx,posy,size,size*1.5);
+    }
     // 名前の描写
     name.split('').forEach(function(val,index,ar){
-        drawText(val,font,size,posx + name.length*size * index/(ar.length-1), posy+size,'#000',shadow,3);
+        drawText(val,font,size,posx + size/2 + name.length*size * index/(ar.length-1), posy+size*1.5,'#000',shadow,3);
     });
-
     // ふり仮名の描写
     furigana.split('').forEach(function(val,index,ar){
-        drawText(val,font,size/3,posx + name.length*size * index/(ar.length-1), posy,'#000',shadow,1);
+        drawText(val,font,size/3,posx + size/2 + name.length*size * index/(ar.length-1), posy+size*0.5,'#000',shadow,1);
     });
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-    return new Rect(posx,posy,size*name.length,size);
+    return new Rect(posx,posy,size*(name.length+1),size*1.5);
 }
 
 function drawText(text,font,size,posx,posy,color,shadow,distance){
@@ -389,37 +395,51 @@ function drawText(text,font,size,posx,posy,color,shadow,distance){
             ctx.fillText(text, posx , posy);
         }
     }
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
 }
 
 // ステータス系の描写
-function drawStatus(status,posx,posy,size) {
+function drawStatus(status,posx,posy,size,window = "rgba(" + [255, 255, 255, 0.3] + ")",labelWidth = 2,valueWidth = 1,margin = 0.25) {
     ctx.beginPath();
     ctx.textBaseline = 'center';
     ctx.textAlign = 'center';
-    ctx.fillStyle = "rgba(" + [255, 255, 255, 0.3] + ")";
-    ctx.fillRect(posx, posy, size*1.25*2+size*3, size*1.25*(status.length-1)+size*1.5);
+    ctx.fillStyle = window;
+    var r = new Rect(posx, posy, 
+        size*margin + size*labelWidth + size*0.5 + size*valueWidth + size*margin, 
+        size*margin + size*0.25 + size*(1+margin)*status.length);
+    ctx.fillRect(r.x,r.y,r.w,r.h);
 
     status.forEach(function(val,index,ar){
         ctx.font = size + 'px ' + font ;
         ctx.fillStyle = '#000';
         ctx.textBaseline = 'center';
         ctx.textAlign = 'center';
-        ctx.fillText(val["label"], posx+size*1.5, posy+size*1.25+size*1.25*index, size*2.5);
+        ctx.fillText(val["label"], 
+            posx + size*margin + size*labelWidth/2, 
+            posy + size*margin + size*1 + size*(1+margin)*index, size*labelWidth);
         ctx.font = size + 'px ' + font ;
-        ctx.fillText(val["value"], posx+size*1.5+size*1.25*2, posy+size*1.25+size*1.25*index);
+        ctx.fillText(val["value"], 
+            posx + size*margin + size*labelWidth + size*0.5 + size*valueWidth/2, 
+            posy + size*margin + size*1 + size*(1+margin)*index, size*valueWidth);
     });
-    return new Rect(posx, posy, size*1.25*2+size*3, size*1.25*(status.length-1)+size*1.5);
+    return r;
 }
 
 // 技能の描写
-function drawSkills(cs,posx,posy,size) {
+function drawSkills(cs,posx,posy,size,window = "rgba(" + [255, 255, 255, 0.3] + ")",labelWidth = 3,valueWidth = 1,margin = 0.25,space = 0.5) {
     if(cs.length<7){
-        return drawStatus(cs,posx,posy,size)
+        return drawStatus(cs,posx,posy,size,window,labelWidth,valueWidth,margin)
     }else{
         cs.length = Math.min(cs.length,20);
         if(cs.length%2==0) cs.length = cs.length-1;
-        var a = drawStatus(cs.slice(0,cs.length/2),posx,posy,size);
-        var b = drawStatus(cs.slice(cs.length/2+1,cs.length),posx+size*5.5,posy,size);
+        var a = drawStatus(cs.slice(0,cs.length/2),posx,posy,size,window,labelWidth,valueWidth,margin);
+        ctx.beginPath();
+        ctx.textBaseline = 'center';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = window;
+        ctx.fillRect(a.x+a.w,a.y,size*space,a.h);
+        var b = drawStatus(cs.slice(cs.length/2+1,cs.length),posx+size*space+a.w,posy,size,window,labelWidth,valueWidth,margin);
         return a.extend(b);
     }
 }

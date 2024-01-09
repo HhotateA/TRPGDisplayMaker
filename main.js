@@ -78,64 +78,68 @@ grabRelativeY = 0
 canvasScale = 3;
 
 $("#preview").mousedown(function(e){
-    if(statusRect.contain(e.offsetX*canvasScale,e.offsetY*canvasScale)){
+    var pos = [e.offsetX*canvasScale,e.offsetY*canvasScale];
+    if(grabFlg != 0) return;
+    if(statusRect.contain(pos[0],pos[1])){
         grabFlg = 1;
-        [grabRelativeX,grabRelativeY] = statusRect.pos(e.offsetX*canvasScale,e.offsetY*canvasScale);
-    }else if(skillsRect.contain(e.offsetX*canvasScale,e.offsetY*canvasScale)){
+        [grabRelativeX,grabRelativeY] = statusRect.pos(pos[0],pos[1]);
+    }else if(skillsRect.contain(pos[0],pos[1])){
         grabFlg = 2;
-        [grabRelativeX,grabRelativeY] = skillsRect.pos(e.offsetX*canvasScale,e.offsetY*canvasScale);
+        [grabRelativeX,grabRelativeY] = skillsRect.pos(pos[0],pos[1]);
     }
 }).mouseup(function(e){
     grabFlg = 0; // マウス押下終了
     drawCanvas();
 }).mousemove(function(e){
+    var pos = [e.offsetX*canvasScale,e.offsetY*canvasScale];
     switch(grabFlg){
         case 0:
             break;
         case 1:
-            statusRect.x = e.offsetX*canvasScale-grabRelativeX;
-            statusRect.y = e.offsetY*canvasScale-grabRelativeY;
+            statusRect.x = pos[0]-grabRelativeX;
+            statusRect.y = pos[1]-grabRelativeY;
             statusRect = drawStatus(getData()["params"],statusRect.x,statusRect.y,40);
             break;
         case 2:
-            skillsRect.x = e.offsetX*canvasScale-grabRelativeX;
-            skillsRect.y = e.offsetY*canvasScale-grabRelativeY;
+            skillsRect.x = pos[0]-grabRelativeX;
+            skillsRect.y = pos[1]-grabRelativeY;
             skillsRect = drawSkills(getData()["commands"],skillsRect.x,skillsRect.y,40);
             break;
     }
 });
 canvas.addEventListener('touchstart',function(e){
+    var pos = [e.changedTouches[0].clientX*canvasScale,e.changedTouches[0].clientY*canvasScale];
     if(grabFlg != 0) return;
-    if(statusRect.contain(e.offsetX*canvasScale,e.offsetY*canvasScale)){
+    if(statusRect.contain(pos[0],pos[1])){
         e.preventDefault();
         grabFlg = 1;
-        [grabRelativeX,grabRelativeY] = statusRect.pos(e.offsetX*canvasScale,e.offsetY*canvasScale);
-    }else if(skillsRect.contain(e.offsetX*canvasScale,e.offsetY*canvasScale)){
+        [grabRelativeX,grabRelativeY] = statusRect.pos(pos[0],pos[1]);
+    }else if(skillsRect.contain(pos[0],pos[1])){
         e.preventDefault();
         grabFlg = 2;
-        [grabRelativeX,grabRelativeY] = skillsRect.pos(e.offsetX*canvasScale,e.offsetY*canvasScale);
+        [grabRelativeX,grabRelativeY] = skillsRect.pos(pos[0],pos[1]);
     }
 });
 canvas.addEventListener('touchend',function(e){
     if(e.changedTouches.length != 0) return;
-    e.preventDefault();
     grabFlg = 0; // マウス押下終了
     drawCanvas();
 });
 canvas.addEventListener('touchmove',function(e){
+    var pos = [e.changedTouches[0].clientX*canvasScale,e.changedTouches[0].clientY*canvasScale];
     switch(grabFlg){
         case 0:
             break;
         case 1:
             e.preventDefault();
-            statusRect.x = e.offsetX*canvasScale-grabRelativeX;
-            statusRect.y = e.offsetY*canvasScale-grabRelativeY;
+            statusRect.x = pos[0]-grabRelativeX;
+            statusRect.y = pos[1]-grabRelativeY;
             statusRect = drawStatus(getData()["params"],statusRect.x,statusRect.y,40);
             break;
         case 2:
             e.preventDefault();
-            skillsRect.x = e.offsetX*canvasScale-grabRelativeX;
-            skillsRect.y = e.offsetY*canvasScale-grabRelativeY;
+            skillsRect.x = pos[0]-grabRelativeX;
+            skillsRect.y = pos[1]-grabRelativeY;
             skillsRect = drawSkills(getData()["commands"],skillsRect.x,skillsRect.y,40);
             break;
     }

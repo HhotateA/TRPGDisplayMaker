@@ -8,23 +8,49 @@
   <body>
     <h1>TRPGディスプレイメーカー</h1>
     <canvas id="preview"></canvas>
+    <p>
+      <a id="download" href="#" download="chara.png">画像をダウンロード</a>
+    </p>
   
     <p>
         <input type="text" id="jsonInput" value='{"kind":"character","data":{"name":"猫魔 帆立 (ねこま ほたて)","initiative":15,"iconUrl":"https://charas.hhotatea.com/imgs/hotate_4.png","commands":"1d100<={SAN} 【正気度ロール】\nCCB<=60 【アイデア】\nCCB<=60 【幸運】\nCCB<=30 【知識】\nCCB<=25 【目星】\nCCB<=25 【聞き耳】\nCCB<=25 【図書館】\nCCB<=30 【回避】\nCCB<=50 【こぶし（パンチ）】\nCCB<=30 【キック】\nCCB<=25 【忍び歩き】\nCCB<=50 【製作（ねこまんま）】\nCCB<=65 【跳躍】\nCCB<=25 【ナビゲート】\nCCB<=25 【言いくるめ】\nCCB<=8 【値切り】\nCCB<=35 【母国語（日本語）】\nCCB<=15 【猫魔人語】\nCCB<=6 【医学】\nCCB<=30 【化学】\nCCB<=55 【芸術（TRPG）】\nCCB<=5 【コンピューター】\nCCB<=6 【心理学】\nCCB<=2 【人類学】\nCCB<=2 【生物学】\nCCB<=2 【地質学】\nCCB<=2 【電子工学】\nCCB<=2 【天文学】\nCCB<=80 【おひるね】\n1d3-1D4 【ダメージ判定】\n1d4-1D4 【ダメージ判定】\n1d6-1D4 【ダメージ判定】\nCCB<={STR}*5 【STR × 5】\nCCB<={CON}*5 【CON × 5】\nCCB<={POW}*5 【POW × 5】\nCCB<={DEX}*5 【DEX × 5】\nCCB<={APP}*5 【APP × 5】\nCCB<={SIZ}*5 【SIZ × 5】\nCCB<={INT}*5 【INT × 5】\nCCB<={EDU}*5 【EDU × 5】\n","status":[{"label":"HP","value":10,"max":10},{"label":"MP","value":12,"max":12},{"label":"SAN","value":0,"max":0}],"params":[{"label":"STR","value":"5"},{"label":"CON","value":"11"},{"label":"POW","value":"12"},{"label":"DEX","value":"15"},{"label":"APP","value":"13"},{"label":"SIZ","value":"8"},{"label":"INT","value":"12"},{"label":"EDU","value":"6"}],"color":"#ffdbed"}}' >
-        <button id="loadButton" name="loadButton">キャラデータ読み込み</button>
+        <button id="loadButton" name="loadButton">キャラデータ読み込み</button> 
+        <button id="drawButton" name="drawButton">再描写</button>
     </p>
-    <p> <input id="imageInput" name="imageInput" type="file" accept="image/jpeg,image/png"> </p>
+    <p> 背景画像を選択 <input id="bgInput" name="bgInput" type="file" accept="image/jpeg,image/png"> </p>
     
     <p>
-      <input type="checkbox" id="statusToggle" name="statusToggle" checked>
-      <input type="number" id="statusXInput" name="statusXInput" min="0" max="1200" />
-      <input type="number" id="statusYInput" name="statusYInput" min="0" max="900" />
-    </p>
+      <input type="checkbox" id="iconToggle" name="iconToggle" checked>
+      x:<input type="number" id="iconXInput" name="iconXInput" min="0" max="1200" value="0"/>
+      y:<input type="number" id="iconYInput" name="iconYInput" min="0" max="900" value="0"/>
+      size:<input type="number" id="iconSizeInput" name="iconSizeInput" min="0" max="500" value="100"/>
 
-    <select id="fontSelect">
-      <option value="arial">フォントを選択</option>
-    </select>
-    <a id="download" href="#" download="chara.png">画像をダウンロード</a>
+      <select id="fontSelect">
+        <option value="arial">フォントを選択</option>
+      </select>
+    </p>
+    <p>
+      <input type="checkbox" id="statusToggle" name="statusToggle" checked>
+      x:<input type="number" id="statusXInput" name="statusXInput" min="0" max="1200" value="50"/>
+      y:<input type="number" id="statusYInput" name="statusYInput" min="0" max="900" value="450"/>
+      size:<input type="number" id="statusSizeInput" name="statusSizeInput" min="0" max="200" value="40"/>
+      status:<input type="text" id="statusInput" name="statusInput">
+    </p>
+    <p>
+      <input type="checkbox" id="skillsToggle" name="skillsToggle" checked>
+      x:<input type="number" id="skillsXInput" name="skillsXInput" min="0" max="1200" value="700"/>
+      y:<input type="number" id="skillsYInput" name="skillsYInput" min="0" max="900" value="100"/>
+      size:<input type="number" id="skillsSizeInput" name="skillsSizeInput" min="0" max="200" value="40"/>
+      skills:<input type="text" id="skillsInput" name="skillsInput">
+    </p>
+    <p>
+      <input type="checkbox" id="namesToggle" name="namesToggle" checked>
+      x:<input type="number" id="namesXInput" name="namesXInput" min="0" max="1200" value="500"/>
+      y:<input type="number" id="namesYInput" name="namesYInput" min="0" max="900" value="700"/>
+      size:<input type="number" id="namesSizeInput" name="namesSizeInput" min="0" max="200" value="120"/>
+      name:<input type="text" id="nameInput" name="nameInput">
+      furigana:<input type="text" id="furiganaInput" name="furiganaInput">
+    </p>
 
     <!-- ライブラリ読み込み -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

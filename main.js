@@ -72,11 +72,17 @@ $(function() {
     loadFont("LanobePOP","ラノベPOP","url(fonts/LanobePOPv2/LightNovelPOPv2.otf)");
     loadFont("ToronoGlitchSans","瀞ノグリッチ黒体","url(fonts/ToronoGlitchSans/ToronoGlitchSansH2.otf)");
     loadFont("KouzanMouhitu","衡山毛筆フォント","url(fonts/KouzanMouhituFontOTF/KouzanMouhituFontOTF.otf)");
+    loadBackground("./sample/1499176.jpg");
     resetCanvas();
     // $('.input').each(function(index, element){
     //     element.addEventListener('change', drawCanvas);
     // })
 });
+
+async function loadBackground(url)
+{
+    backGround = getIconPicture(url);
+}
 
 async function loadFont(id,name,url){
     let font = new FontFace(id,url);
@@ -177,6 +183,14 @@ async function getData(){
     }catch(e){
         console.log(e);
     }
+    try{
+        //$("#iconShadowColor").val("#cccccc");
+        if("color" in data){
+            $("#iconShadowColor").val(data["color"]);
+        }
+    }catch(e){
+        console.log(e);
+    }
 }
 
 function perseSkills(command) {
@@ -246,18 +260,18 @@ grabRelativeY = 0
 $("#preview").mousedown(function(e){
     if(grabFlg != 0) return;
     var pos = [e.offsetX*canvasScale,e.offsetY*canvasScale];
-    if(statusRect.contain(pos[0],pos[1]) && $("#statusToggle").prop('checked')){
+    if(nameRect.contain(pos[0],pos[1]) && $("#namesToggle").prop('checked')){
         grabFlg = 1;
+        [grabRelativeX,grabRelativeY] = nameRect.pos(pos[0],pos[1]);
+    }else if(hudRect.contain(pos[0],pos[1]) && $("#hudToggle").prop('checked')){
+        grabFlg = 2;
+        [grabRelativeX,grabRelativeY] = hudRect.pos(pos[0],pos[1]);
+    }else if(statusRect.contain(pos[0],pos[1]) && $("#statusToggle").prop('checked')){
+        grabFlg = 3;
         [grabRelativeX,grabRelativeY] = statusRect.pos(pos[0],pos[1]);
     }else if(skillsRect.contain(pos[0],pos[1]) && $("#skillsToggle").prop('checked')){
-        grabFlg = 2;
-        [grabRelativeX,grabRelativeY] = skillsRect.pos(pos[0],pos[1]);
-    }else if(hudRect.contain(pos[0],pos[1]) && $("#hudToggle").prop('checked')){
-        grabFlg = 3;
-        [grabRelativeX,grabRelativeY] = hudRect.pos(pos[0],pos[1]);
-    }else if(nameRect.contain(pos[0],pos[1]) && $("#namesToggle").prop('checked')){
         grabFlg = 4;
-        [grabRelativeX,grabRelativeY] = nameRect.pos(pos[0],pos[1]);
+        [grabRelativeX,grabRelativeY] = skillsRect.pos(pos[0],pos[1]);
     }else if(iconRect.contain(pos[0],pos[1]) && $("#iconToggle").prop('checked')){
         grabFlg = 5;
         [grabRelativeX,grabRelativeY] = iconRect.pos(pos[0],pos[1]);
@@ -271,24 +285,24 @@ $("#preview").mousedown(function(e){
         case 0:
             break;
         case 1:
-            $("#statusXInput").val(pos[0]-grabRelativeX);
-            $("#statusYInput").val(pos[1]-grabRelativeY);
-            statusRect = drawStatusIO();
+            $("#namesXInput").val(pos[0]-grabRelativeX);
+            $("#namesYInput").val(pos[1]-grabRelativeY);
+            nameRect = drawNameIO();
             break;
         case 2:
-            $("#skillsXInput").val(pos[0]-grabRelativeX);
-            $("#skillsYInput").val(pos[1]-grabRelativeY);
-            skillsRect = drawSkillsIO();
-            break;
-        case 3:
             $("#hudXInput").val(pos[0]-grabRelativeX);
             $("#hudYInput").val(pos[1]-grabRelativeY);
             hudRect = drawHudIO();
             break;
+        case 3:
+            $("#statusXInput").val(pos[0]-grabRelativeX);
+            $("#statusYInput").val(pos[1]-grabRelativeY);
+            statusRect = drawStatusIO();
+            break;
         case 4:
-            $("#namesXInput").val(pos[0]-grabRelativeX);
-            $("#namesYInput").val(pos[1]-grabRelativeY);
-            nameRect = drawNameIO();
+            $("#skillsXInput").val(pos[0]-grabRelativeX);
+            $("#skillsYInput").val(pos[1]-grabRelativeY);
+            skillsRect = drawSkillsIO();
             break;
         case 5:
             $("#iconXInput").val(pos[0]-grabRelativeX);
@@ -357,7 +371,7 @@ function drawCharadatas(){
         console.log(e.message);
     }
     try {
-        nameRect = drawNameIO();
+        skillsRect = drawSkillsIO();
     } catch (e) {
         console.log(e.message);
     }
@@ -372,7 +386,7 @@ function drawCharadatas(){
         console.log(e.message);
     }
     try {
-        skillsRect = drawSkillsIO();
+        nameRect = drawNameIO();
     } catch (e) {
         console.log(e.message);
     }
@@ -489,15 +503,6 @@ function drawIconPicture(image,posx,posy,size,shadow){
     ctx.shadowOffsetX = 15;
     ctx.shadowOffsetY = 15;
     ctx.drawImage(image, posx, posy, cnvsW*(size/100), cnvsH*(size/100));
-    // 影を一様に入れる処理（重いので一時無効）
-    var max = 20
-    /*for (let i = -max; i <= max; i+=2){
-        for (let j = -max; j <= max; j+=2){
-            ctx.shadowOffsetX = i;
-            ctx.shadowOffsetY = j;
-            ctx.drawImage(image, 0, 0, cnvsW, cnvsH);
-        }
-    }*/
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
     return new Rect(posx, posy, cnvsW*(size/100), cnvsH*(size/100));

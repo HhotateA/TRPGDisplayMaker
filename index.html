@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="sample.css">
     <title>TRPGディスプレイメーカー</title>
+    <!-- ライブラリ読み込み -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   </head>
   <body>
     <h1>TRPGディスプレイメーカー</h1>
@@ -25,39 +27,110 @@
 
     <details>
       <summary>詳細設定</summary>
-      <button id="drawButton" name="drawButton">再描写</button>
-      <p>
+      <div>
+        <button id="drawButton" name="drawButton">再描写</button>
+      </div>
+      <hr>
+      <div>
         <input type="checkbox" id="iconToggle" name="iconToggle" checked>
+        Iconの表示設定
+        <br>
         x:<input type="number" id="iconXInput" name="iconXInput" min="0" max="1200" value="0"/>
         y:<input type="number" id="iconYInput" name="iconYInput" min="0" max="900" value="0"/>
         size:<input type="number" id="iconSizeInput" name="iconSizeInput" min="0" max="500" value="100"/>
-      </p>
-      <p>
+        <br>
+        shadow:<input id="iconShadowColor" type="color" value="#cc11cc" list="colors">
+      </div>
+      <hr>
+      <div>
+        <input type="checkbox" id="bgToggle" name="iconToggle" checked>
+        背景の表示設定
+        <br>
+        x:<input type="number" id="bgXInput" name="bgXInput" min="0" max="1200" value="0"/>
+        y:<input type="number" id="bgYInput" name="bgYInput" min="0" max="900" value="0"/>
+        size:<input type="number" id="bgSizeInput" name="bgSizeInput" min="0" max="500" value="100"/>
+        <br>
+        bgColor:<input id="bgColor" type="color" value="#cccccc" list="colors">
+      </div>
+      <hr>
+      <div>
         <input type="checkbox" id="statusToggle" name="statusToggle" checked>
-        x:<input type="number" id="statusXInput" name="statusXInput" min="0" max="1200" value="50"/>
-        y:<input type="number" id="statusYInput" name="statusYInput" min="0" max="900" value="450"/>
+        パラメータの表示設定
+        <br>
+        x:<input type="number" id="statusXInput" name="statusXInput" min="0" max="1200" value="75"/>
+        y:<input type="number" id="statusYInput" name="statusYInput" min="0" max="900" value="300"/>
         size:<input type="number" id="statusSizeInput" name="statusSizeInput" min="0" max="200" value="40"/>
-        status:<input type="text" id="statusInput" name="statusInput">
-      </p>
-      <p>
+        <p hidden>
+          labelW:<input type="number" id="statusLabelWidth" name="statusLabelWidth" min="0" max="10" value="2" />
+          valueW:<input type="number" id="statusValuelWidth" name="statusValuelWidth" min="0" max="10" value="1" />
+          margin:<input type="number" id="statusMargin" name="statusMargin" min="0" max="10" value="0.25" />
+        </p>
+        <br>
+        textColor:<input id="statusTextColor" type="color" value="#000000" list="colors">
+        shadowColor:<input id="statusShadowColor" type="color" value="#ffffff" list="colors">
+        <br>
+        windowColor:<input id="statusWindowColor" type="color" value="#ffffff" list="colors">
+        alpha:<input type="range" id="statusWindowAlpha" min="0" max="1" value="0.7" step="0.01" />
+        <br>
+        params:<input type="text" id="statusInput" name="statusInput">
+      </div>
+      <hr>
+      <div>
+        <input type="checkbox" id="hudToggle" name="hudToggle" checked>
+        ステータスの表示設定
+        <br>
+        x:<input type="number" id="hudXInput" name="hudXInput" min="0" max="1200" value="50"/>
+        y:<input type="number" id="hudYInput" name="hudYInput" min="0" max="900" value="780"/>
+        size:<input type="number" id="hudSizeInput" name="hudSizeInput" min="0" max="200" value="60"/>
+        <br>
+        textColor:<input id="hudTextColor" type="color" value="#000000" list="colors">
+        shadowColor:<input id="hudShadowColor" type="color" value="#ffffff" list="colors">
+        <br>
+        windowColor:<input id="hudWindowColor" type="color" value="#ffffff" list="colors">
+        alpha:<input type="range" id="hudWindowAlpha" min="0" max="1" value="0.7" step="0.01" />
+        <br>
+        status:<input type="text" id="hudInput" name="hudInput">
+      </div>
+      <hr>
+      <div>
         <input type="checkbox" id="skillsToggle" name="skillsToggle" checked>
-        x:<input type="number" id="skillsXInput" name="skillsXInput" min="0" max="1200" value="700"/>
-        y:<input type="number" id="skillsYInput" name="skillsYInput" min="0" max="900" value="100"/>
+        技能の表示設定
+        <br>
+        x:<input type="number" id="skillsXInput" name="skillsXInput" min="0" max="1200" value="725"/>
+        y:<input type="number" id="skillsYInput" name="skillsYInput" min="0" max="900" value="50"/>
         size:<input type="number" id="skillsSizeInput" name="skillsSizeInput" min="0" max="200" value="40"/>
+        <p hidden>
+          labelW:<input type="number" id="skillsLabelWidth" name="skillsLabelWidth" min="0" max="10" value="3" />
+          valueW:<input type="number" id="skillsValuelWidth" name="skillsValuelWidth" min="0" max="10" value="1" />
+          margin:<input type="number" id="skillsMargin" name="skillsMargin" min="0" max="10" value="0.25" />
+          space:<input type="number" id="skillsSpace" name="skillsSpace" min="0" max="10" value="0.5" />
+        </p>
+        <br>
+        textColor:<input id="skillsTextColor" type="color" value="#000000" list="colors">
+        shadowColor:<input id="skillsShadowColor" type="color" value="#ffffff" list="colors">
+        <br>
+        windowColor:<input id="skillsWindowColor" type="color" value="#ffffff" list="colors">
+        alpha:<input type="range" id="skillsWindowAlpha" min="0" max="1" value="0.7" step="0.01" />
+        <br>
         skills:<input type="text" id="skillsInput" name="skillsInput">
-      </p>
-      <p>
+      </div>
+      <hr>
+      <div>
         <input type="checkbox" id="namesToggle" name="namesToggle" checked>
+        名前の表示設定
+        <br>
         x:<input type="number" id="namesXInput" name="namesXInput" min="0" max="1200" value="450"/>
-        y:<input type="number" id="namesYInput" name="namesYInput" min="0" max="900" value="670"/>
-        size:<input type="number" id="namesSizeInput" name="namesSizeInput" min="0" max="200" value="120"/>
+        y:<input type="number" id="namesYInput" name="namesYInput" min="0" max="900" value="750"/>
+        size:<input type="number" id="namesSizeInput" name="namesSizeInput" min="0" max="200" value="150"/>
+        <br>
+        textColor:<input id="nameTextColor" type="color" value="#000000" list="colors">
+        shadowColor:<input id="nameShadowColor" type="color" value="#ffffff" list="colors">
+        <br>
         name:<input type="text" id="nameInput" name="nameInput">
         furigana:<input type="text" id="furiganaInput" name="furiganaInput">
-      </p>
+      </div>
     </details>
 
-    <!-- ライブラリ読み込み -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="main.js"></script>
   </body>
 </html>

@@ -1,4 +1,5 @@
 // #region class
+// 描画オブジェクトの当たり判定用クラス
 class Rect {
     constructor(x = 0, y = 0, w = 0, h = 0) {
         this.x = x;
@@ -33,6 +34,9 @@ class Rect {
     }
 }
 
+// カラーコードの文字列を変換する。
+// https://cly7796.net/blog/javascript/changing-the-color-format-with-javascript
+// を参考に作成。
 function colorcode2rgb(colorcode,alpha) {
     if(colorcode.split('')[0] === '#') {
         colorcode = colorcode.substring(1);
@@ -54,12 +58,15 @@ function colorcode2rgb(colorcode,alpha) {
 // #region initialize
 const canvas = document.getElementById("preview");
 const ctx = canvas.getContext('2d');
+
+// 技能から除外するコマンド
 const commandFilter = ["正気度ロール","アイデア","幸運","知識","STR × 5","CON × 5","POW × 5","DEX × 5","APP × 5","SIZ × 5","INT × 5","EDU × 5", "クトゥルフ神話",
     "∞共鳴","＊調査","＊知覚","＊交渉","＊知識","＊ニュース","＊運動","＊格闘","＊投擲","＊生存","＊自我","＊手当て","＊細工","＊幸運"];
+
+// グローバル変数群
 font = "arial"
 backGround = new Image();
 iconImage = new Image();
-
 statusRect = new Rect(50,450,1,1)
 hudRect = new Rect(50,450,1,1)
 skillsRect = new Rect(700,100,1,1)
@@ -68,20 +75,21 @@ iconRect = new Rect(0,0,1,1)
 canvasScale = 3;
 
 $(function() {
+    // フォントの読み込み。
     loadFont("soukou","装甲明朝","url(fonts/SoukouMincho-Font/SoukouMincho.ttf)");
     loadFont("LanobePOP","ラノベPOP","url(fonts/LanobePOPv2/LightNovelPOPv2.otf)");
     loadFont("ToronoGlitchSans","瀞ノグリッチ黒体","url(fonts/ToronoGlitchSans/ToronoGlitchSansH2.otf)");
     loadFont("KouzanMouhitu","衡山毛筆フォント","url(fonts/KouzanMouhituFontOTF/KouzanMouhituFontOTF.otf)");
-    loadBackground("./sample/1499176.jpg");
+    // ↑ 新たなフォントはここに追加する。
+
+    loadBackground("https://hhotatea.github.io/TRPGDisplayMaker/sample/1499176.jpg");
     resetCanvas();
-    // $('.input').each(function(index, element){
-    //     element.addEventListener('change', drawCanvas);
-    // })
 });
 
 async function loadBackground(url)
 {
-    backGround = getIconPicture(url);
+    // 初期背景画像の読み込み
+    backGround = await getIconPicture(url);
 }
 
 async function loadFont(id,name,url){
@@ -149,7 +157,7 @@ async function getData(){
         console.log(e);
     }
     try{
-        $("#skillsInput").val(JSON.stringify(""));
+        $("#skillsInput").val("[]");
         if("commands" in data){
             var skills = perseSkills(data["commands"]);
             $("#skillsInput").val(JSON.stringify(skills));
@@ -158,7 +166,7 @@ async function getData(){
         console.log(e);
     }
     try{
-        $("#statusInput").val(JSON.stringify(""));
+        $("#statusInput").val("[]");
         if("params" in data){
             var params = [data["params"]];
             $("#statusInput").val(JSON.stringify(params));
@@ -167,7 +175,7 @@ async function getData(){
         console.log(e);
     }
     try{
-        $("#hudInput").val(JSON.stringify(""));
+        $("#hudInput").val("[]");
         if("status" in data){
             var params = data["status"];
             $("#hudInput").val(JSON.stringify(params));
@@ -253,10 +261,12 @@ async function getIconPicture(url){
 // #endregion
 
 // #region touch
+// これもグローバル変数だけど、このブロックでしか使わないのでここに配置。
 grabFlg = 0;
 grabRelativeX = 0
 grabRelativeY = 0
 
+// マウスでドラッグした時に、オブジェクトを移動させる。
 $("#preview").mousedown(function(e){
     if(grabFlg != 0) return;
     var pos = [e.offsetX*canvasScale,e.offsetY*canvasScale];
@@ -277,7 +287,7 @@ $("#preview").mousedown(function(e){
         [grabRelativeX,grabRelativeY] = iconRect.pos(pos[0],pos[1]);
     }
 }).mouseup(function(e){
-    grabFlg = 0; // マウス押下終了
+    grabFlg = 0;
     drawCanvas();
 }).mousemove(function(e){
     var pos = [e.offsetX*canvasScale,e.offsetY*canvasScale];
@@ -360,35 +370,37 @@ async function reloadCanvas(){
     drawCharadatas();
 }
 function drawCharadatas(){
+    // ここらへんは、ユーザーの入力値で任意にバグるので
+    // エラーを握りつぶす。
     try {
         drawBackGroundIO();
     } catch (e) {
-        console.log(e.message);
+        console.log(e);
     }
     try {
         iconRect = drawIconIO();
     } catch (e) {
-        console.log(e.message);
+        console.log(e);
     }
     try {
         skillsRect = drawSkillsIO();
     } catch (e) {
-        console.log(e.message);
+        console.log(e);
     }
     try {
         statusRect = drawStatusIO();
     } catch (e) {
-        console.log(e.message);
+        console.log(e);
     }
     try {
         hudRect = drawHudIO();
     } catch (e) {
-        console.log(e.message);
+        console.log(e);
     }
     try {
         nameRect = drawNameIO();
     } catch (e) {
-        console.log(e.message);
+        console.log(e);
     }
 }
 function drawBackGroundIO(){

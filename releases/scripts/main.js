@@ -75,8 +75,8 @@ $('#bgInput').change(function(){
     fr.onload = function(evt) {
         backGround.src = evt.target.result;
         backGround.onload = function() {
-            draw.drawBackGroundIO();
-            draw.drawCanvas();
+            drawBackGroundIO();
+            drawCanvas();
         }
     }
     fr.readAsDataURL(file);

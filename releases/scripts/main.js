@@ -13,7 +13,7 @@ var nameRect = new Rect(800,725,1,1);
 var iconRect = new Rect(0,0,1,1);
 var canvasWidth = 1200;
 var canvasHeight = 900;
-var canvasScale = 3;
+var canvasScale = 1;
 
 $(function() {
     // フォントの読み込み。
@@ -27,7 +27,8 @@ $(function() {
     // ↑ 新たなフォントはここに追加する。
 
     loadBackground("https://hhotatea.github.io/TRPGDisplayMaker/imgs/BGSample.jpg");
-    draw.resetCanvas(canvasWidth,canvasHeight,canvasScale);
+    resizeCanvas();
+    draw.resetCanvas(canvasWidth,canvasHeight);
 });
 
 async function loadBackground(url) {
@@ -81,6 +82,19 @@ $('#bgInput').change(function(){
     }
     fr.readAsDataURL(file);
 });
+
+$(window).resize(function(){
+    resizeCanvas();
+});
+function resizeCanvas(){
+    if(document.body.clientWidth > 925){
+        canvasScale = canvasWidth/(document.body.clientWidth-500);
+    }else{
+        canvasScale = canvasWidth/(document.body.clientWidth-50);
+    }
+    canvas.style.width = canvasWidth/canvasScale+`px`;
+    canvas.style.height = canvasHeight/canvasScale+`px`;
+}
 // #endregion
 
 // #region load
@@ -218,7 +232,7 @@ async function drawCanvas(){
     drawCharadatas();
 }
 async function reloadCanvas(){
-    draw.resetCanvas(canvasWidth,canvasHeight,canvasScale);
+    draw.resetCanvas(canvasWidth,canvasHeight);
     await getData();
     drawCharadatas();
 }
@@ -257,7 +271,7 @@ function drawCharadatas(){
     }
 }
 function drawBackGroundIO(){
-    draw.resetCanvas(canvasWidth,canvasHeight,canvasScale,$("#bgColor").val());
+    draw.resetCanvas(canvasWidth,canvasHeight,$("#bgColor").val());
     if($("#bgToggle").prop('checked')){
         draw.drawBackGround(backGround,
             Number($("#bgXInput").val()),

@@ -1,0 +1,39 @@
+@media screen and (max-width: 900px) {
+    .left{
+        float: center;
+        padding: 20px 30px;
+        text-align: center;
+    }
+    
+    .right{
+        float: center;
+        padding: auto;
+        text-align: center;
+    }
+    
+    .center{
+        clear: both;
+        padding: 20px 30px;
+        text-align: left;
+    }
+}
+    
+@media screen and (min-width: 900px) {
+    .left{
+        float: left;
+        padding: 20px 30px;
+        text-align: center;
+    }
+    
+    .right{
+        float: right;
+        padding: 20px 30px;
+        text-align: left;
+    }
+    
+    .center{
+        clear: both;
+        padding: 20px 30px;
+        text-align: left;
+    }
+}

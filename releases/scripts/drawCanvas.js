@@ -50,11 +50,9 @@ class DrawCanvas {
         return this.getRect(status,posx,posy,size,labelWidth,valueWidth,margin);
     }
     
-    resetCanvas(width,height,scale,color = "#ccc"){
+    resetCanvas(width,height,color = "#ccc"){
         this.canvas.width = width;
         this.canvas.height = height;
-        this.canvas.style.width = width/scale+`px`;
-        this.canvas.style.height = height/scale+`px`;
         this.ctx.beginPath();
         this.ctx.fillStyle = color;
         this.ctx.fillRect(0, 0, 1200, 900);

@@ -1,5 +1,5 @@
 // 描画オブジェクトの当たり判定用クラス
-export class Rect {
+class Rect {
     constructor(x = 0, y = 0, w = 0, h = 0) {
         this.x = x;
         this.y = y;

@@ -1,8 +1,3 @@
-import {perseSkills,perseNameFurigana,colorcode2rgb} from "./scripts/perseCommands.js"; 
-import {getIconPicture} from "./scripts/imageDownloader.js"; 
-import {Rect} from "./scripts/rect.js"; 
-import {DrawCanvas} from "./scripts/drawCanvas.js"; 
-
 // #region initialize
 const canvas = document.getElementById("preview");
 const ctx = canvas.getContext('2d');

@@ -68,4 +68,3 @@ function colorcode2rgb(colorcode,alpha) {
 
 if (typeof module !== "undefined") 
     module.exports = perseSkills;
-export { perseSkills, perseNameFurigana, colorcode2rgb}

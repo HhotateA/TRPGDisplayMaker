@@ -1,3 +1,6 @@
-var script = document.createElement('script'); //変数名は適当なものにでも
-script.src = "import.js"; //ファイルパス
-document.head.appendChild(script); //<head>に生成
+const scriptPaths = ["perseCommands.js","imageDownloader.js","rect.js","drawCanvas.js","main.js"];
+scriptPaths.forEach(function(val,index,ar){
+    var script = document.createElement('script');
+    script.src = "scripts/" + val;
+    document.head.appendChild(script);
+});

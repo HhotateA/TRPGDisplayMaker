@@ -1,6 +1,4 @@
-import {Rect} from "./rect.js"; 
-
-export class DrawCanvas {
+class DrawCanvas {
     constructor(canvas,ctx){
         this.canvas = canvas;
         this.ctx = ctx;

@@ -1,5 +1,5 @@
-// キャラクター立ち絵の描写
-export async function getIconPicture(url){
+// キャラクター立ち絵のダウンロード
+async function getIconPicture(url){
     var image = new Image();
     if(url == "") return image;
     return new Promise(resolve =>{

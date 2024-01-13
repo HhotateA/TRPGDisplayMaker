@@ -24,7 +24,7 @@
     </p>
   
     <p>
-        <input type="text" id="jsonInput" value='{"kind":"character","data":{"name":"猫魔 帆立 (ねこま ほたて)","initiative":15,"iconUrl":"https://charas.hhotatea.com/imgs/hotate_4.png","commands":"1d100<={SAN} 【正気度ロール】\nCCB<=60 【アイデア】\nCCB<=60 【幸運】\nCCB<=30 【知識】\nCCB<=25 【目星】\nCCB<=25 【聞き耳】\nCCB<=25 【図書館】\nCCB<=30 【回避】\nCCB<=50 【こぶし（パンチ）】\nCCB<=30 【キック】\nCCB<=25 【忍び歩き】\nCCB<=50 【製作（ねこまんま）】\nCCB<=65 【跳躍】\nCCB<=25 【ナビゲート】\nCCB<=25 【言いくるめ】\nCCB<=8 【値切り】\nCCB<=35 【母国語（日本語）】\nCCB<=15 【猫魔人語】\nCCB<=6 【医学】\nCCB<=30 【化学】\nCCB<=55 【芸術（TRPG）】\nCCB<=5 【コンピューター】\nCCB<=6 【心理学】\nCCB<=2 【人類学】\nCCB<=2 【生物学】\nCCB<=2 【地質学】\nCCB<=2 【電子工学】\nCCB<=2 【天文学】\nCCB<=80 【おひるね】\n1d3-1D4 【ダメージ判定】\n1d4-1D4 【ダメージ判定】\n1d6-1D4 【ダメージ判定】\nCCB<={STR}*5 【STR × 5】\nCCB<={CON}*5 【CON × 5】\nCCB<={POW}*5 【POW × 5】\nCCB<={DEX}*5 【DEX × 5】\nCCB<={APP}*5 【APP × 5】\nCCB<={SIZ}*5 【SIZ × 5】\nCCB<={INT}*5 【INT × 5】\nCCB<={EDU}*5 【EDU × 5】\n","status":[{"label":"HP","value":10,"max":10},{"label":"MP","value":12,"max":12},{"label":"SAN","value":0,"max":0}],"params":[{"label":"STR","value":"5"},{"label":"CON","value":"11"},{"label":"POW","value":"12"},{"label":"DEX","value":"15"},{"label":"APP","value":"13"},{"label":"SIZ","value":"8"},{"label":"INT","value":"12"},{"label":"EDU","value":"6"}],"color":"#ffdbed"}}' >
+        <input type="text" id="jsonInput" value='{"kind":"character","data":{"name":"猫魔 帆立 (ねこま ほたて)","initiative":15,"iconUrl":"https://charas.hhotatea.com/imgs/hotate_4.png","commands":"1d100<={SAN} 【正気度ロール】\nCCB<=60 【アイデア】\nCCB<=60 【幸運】\nCCB<=30 【知識】\nCCB<=25 【目星】\nCCB<=25 【聞き耳】\nCCB<=25 【図書館】\nCCB<=30 【回避】\nCCB<=50 【こぶし（パンチ）】\nCCB<=30 【キック】\nCCB<=25 【忍び歩き】\nCCB<=50 【製作（ねこまんま）】\nCCB<=65 【跳躍】\nCCB<=25 【ナビゲート】\nCCB<=25 【言いくるめ】\nCCB<=8 【値切り】\nCCB<=35 【母国語（日本語）】\nCCB<=15 【猫魔人語】\nCCB<=6 【医学】\nCCB<=30 【化学】\nCCB<=55 【芸術（TRPG）】\nCCB<=5 【コンピューター】\nCCB<=6 【心理学】\nCCB<=2 【人類学】\nCCB<=2 【生物学】\nCCB<=2 【地質学】\nCCB<=2 【電子工学】\nCCB<=2 【天文学】\nCCB<=80 【おひるね】\n1d3-1D4 【ダメージ判定】\n1d4-1D4 【ダメージ判定】\n1d6-1D4 【ダメージ判定】\nCCB<={STR}*5 【STR × 5】\nCCB<={CON}*5 【CON × 5】\nCCB<={POW}*5 【POW × 5】\nCCB<={DEX}*5 【DEX × 5】\nCCB<={APP}*5 【APP × 5】\nCCB<={SIZ}*5 【SIZ × 5】\nCCB<={INT}*5 【INT × 5】\nCCB<={EDU}*5 【EDU × 5】\n","status":[{"label":"HP","value":10,"max":10},{"label":"MP","value":12,"max":12},{"label":"SAN","value":57,"max":99}],"params":[{"label":"STR","value":"5"},{"label":"CON","value":"11"},{"label":"POW","value":"12"},{"label":"DEX","value":"15"},{"label":"APP","value":"13"},{"label":"SIZ","value":"8"},{"label":"INT","value":"12"},{"label":"EDU","value":"6"}],"color":"#ffdbed"}}' >
         <button id="loadButton" name="loadButton">キャラデータ読み込み</button> 
     </p>
     
@@ -49,6 +49,7 @@
         size:<input type="number" id="iconSizeInput" name="iconSizeInput" min="0" max="500" value="100"/>
         <br>
         shadow:<input id="iconShadowColor" type="color" value="#cc11cc" list="colors">
+        outline:<input type="range" id="iconOutline" min="-50" max="50" value="15" step="1" />
       </div>
       <hr>
       <div>
@@ -66,7 +67,7 @@
         <input type="checkbox" id="statusToggle" name="statusToggle" checked>
         パラメータの表示設定
         <br>
-        x:<input type="number" id="statusXInput" name="statusXInput" min="0" max="1200" value="75"/>
+        x:<input type="number" id="statusXInput" name="statusXInput" min="0" max="1200" value="25"/>
         y:<input type="number" id="statusYInput" name="statusYInput" min="0" max="900" value="300"/>
         size:<input type="number" id="statusSizeInput" name="statusSizeInput" min="0" max="200" value="40"/>
         <p hidden>
@@ -77,6 +78,7 @@
         <br>
         textColor:<input id="statusTextColor" type="color" value="#000000" list="colors">
         shadowColor:<input id="statusShadowColor" type="color" value="#ffffff" list="colors">
+        outline:<input type="range" id="statusOutline" min="0" max="10" value="0" step="1" />
         <br>
         windowColor:<input id="statusWindowColor" type="color" value="#ffffff" list="colors">
         alpha:<input type="range" id="statusWindowAlpha" min="0" max="1" value="0.7" step="0.01" />
@@ -88,12 +90,13 @@
         <input type="checkbox" id="hudToggle" name="hudToggle" checked>
         ステータスの表示設定
         <br>
-        x:<input type="number" id="hudXInput" name="hudXInput" min="0" max="1200" value="50"/>
-        y:<input type="number" id="hudYInput" name="hudYInput" min="0" max="900" value="780"/>
+        x:<input type="number" id="hudXInput" name="hudXInput" min="0" max="1200" value="70"/>
+        y:<input type="number" id="hudYInput" name="hudYInput" min="0" max="900" value="775"/>
         size:<input type="number" id="hudSizeInput" name="hudSizeInput" min="0" max="200" value="60"/>
         <br>
         textColor:<input id="hudTextColor" type="color" value="#000000" list="colors">
         shadowColor:<input id="hudShadowColor" type="color" value="#ffffff" list="colors">
+        outline:<input type="range" id="hudOutline" min="0" max="10" value="3" step="1" />
         <br>
         windowColor:<input id="hudWindowColor" type="color" value="#ffffff" list="colors">
         alpha:<input type="range" id="hudWindowAlpha" min="0" max="1" value="0.7" step="0.01" />
@@ -117,6 +120,7 @@
         <br>
         textColor:<input id="skillsTextColor" type="color" value="#000000" list="colors">
         shadowColor:<input id="skillsShadowColor" type="color" value="#ffffff" list="colors">
+        outline:<input type="range" id="skillsOutline" min="0" max="10" value="0" step="1" />
         <br>
         windowColor:<input id="skillsWindowColor" type="color" value="#ffffff" list="colors">
         alpha:<input type="range" id="skillsWindowAlpha" min="0" max="1" value="0.7" step="0.01" />
@@ -128,12 +132,13 @@
         <input type="checkbox" id="namesToggle" name="namesToggle" checked>
         名前の表示設定
         <br>
-        x:<input type="number" id="namesXInput" name="namesXInput" min="0" max="1200" value="495"/>
+        x:<input type="number" id="namesXInput" name="namesXInput" min="0" max="1200" value="800"/>
         y:<input type="number" id="namesYInput" name="namesYInput" min="0" max="900" value="725"/>
         size:<input type="number" id="namesSizeInput" name="namesSizeInput" min="0" max="200" value="150"/>
         <br>
         textColor:<input id="nameTextColor" type="color" value="#000000" list="colors">
         shadowColor:<input id="nameShadowColor" type="color" value="#ffffff" list="colors">
+        outline:<input type="range" id="nameOutline" min="0" max="10" value="5" step="1" />
         <br>
         name:<input type="text" id="nameInput" name="nameInput">
         furigana:<input type="text" id="furiganaInput" name="furiganaInput">
@@ -145,6 +150,6 @@
     <p>このウェブアプリはオープンソースで開発されています。 <a href="https://github.com/HhotateA/TRPGDisplayMaker"> TRPGDisplayMaker </a></p>
     <p>プライバシーポリシー <a href="https://hhotatea.com/privacypolicy.html"> PrivacyPolicy </a></p>
 
-    <script src="main.js"></script>
+    <script src="main.js"  type="module" ></script>
   </body>
 </html>

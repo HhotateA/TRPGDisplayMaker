@@ -1,99 +1,47 @@
-// #region class
-// 描画オブジェクトの当たり判定用クラス
-class Rect {
-    constructor(x = 0, y = 0, w = 0, h = 0) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-    }
-    contain(offsetX,offsetY){
-        if(this.x>offsetX) return false;
-        if(this.x+this.w<offsetX) return false;
-        if(this.y>offsetY) return false;
-        if(this.y+this.h<offsetY) return false;
-        return true;
-    }
-    pos(offsetX,offsetY){
-        return [offsetX-this.x, offsetY-this.y];
-    }
-    extend(rect){
-        var xmin = Math.min(this.x,this.x+this.w,rect.x,rect.x+rect.w);
-        var ymin = Math.min(this.y,this.y+this.h,rect.y,rect.y+rect.h);
-        var xmax = Math.max(this.x,this.x+this.w,rect.x,rect.x+rect.w);
-        var ymax = Math.max(this.y,this.y+this.h,rect.y,rect.y+rect.h);
-        return new Rect(xmin,ymin,xmax-xmin,ymax-ymin);
-    }
-    copyTo(xInput,yInput){
-        xInput.val(this.x);
-        yInput.val(this.y);
-    }
-    copyFrom(xInput,yInput){
-        this.x = xInput.val();
-        this.y = yInput.val();
-    }
-}
-
-// カラーコードの文字列を変換する。
-// https://cly7796.net/blog/javascript/changing-the-color-format-with-javascript
-// を参考に作成。
-function colorcode2rgb(colorcode,alpha) {
-    if(colorcode.split('')[0] === '#') {
-        colorcode = colorcode.substring(1);
-    }
-    if(colorcode.length === 3) {
-        var codeArr = colorcode.split('');
-        colorcode = codeArr[0] + codeArr[0] + codeArr[1] + codeArr[1] + codeArr[2] + codeArr[2];
-    }
-    if(colorcode.length !== 6) {
-        return false;
-    }
-    var r = parseInt(colorcode.substring(0, 2), 16);
-    var g = parseInt(colorcode.substring(2, 4), 16);
-    var b = parseInt(colorcode.substring(4, 6), 16);
-    return "rgba(" + [r, g, b, alpha] + ")"
-}
-// #endregion
+import {perseSkills,perseNameFurigana,colorcode2rgb} from "./scripts/perseCommands.js"; 
+import {getIconPicture} from "./scripts/imageDownloader.js"; 
+import {Rect} from "./scripts/rect.js"; 
+import {DrawCanvas} from "./scripts/drawCanvas.js"; 
 
 // #region initialize
 const canvas = document.getElementById("preview");
 const ctx = canvas.getContext('2d');
-
-// 技能から除外するコマンド
-const commandFilter = ["正気度ロール","アイデア","幸運","知識","STR × 5","CON × 5","POW × 5","DEX × 5","APP × 5","SIZ × 5","INT × 5","EDU × 5", "クトゥルフ神話",
-    "∞共鳴","＊調査","＊知覚","＊交渉","＊知識","＊ニュース","＊運動","＊格闘","＊投擲","＊生存","＊自我","＊手当て","＊細工","＊幸運"];
+var draw = new DrawCanvas(canvas,ctx);
 
 // グローバル変数群
-font = "arial"
-backGround = new Image();
-iconImage = new Image();
-statusRect = new Rect(50,450,1,1)
-hudRect = new Rect(50,450,1,1)
-skillsRect = new Rect(700,100,1,1)
-nameRect = new Rect(500,700,1,1)
-iconRect = new Rect(0,0,1,1)
-canvasScale = 3;
+var backGround = new Image();
+var iconImage = new Image();
+var statusRect = new Rect(50,450,1,1);
+var hudRect = new Rect(50,450,1,1);
+var skillsRect = new Rect(700,100,1,1);
+var nameRect = new Rect(800,725,1,1);
+var iconRect = new Rect(0,0,1,1);
+var canvasWidth = 1200;
+var canvasHeight = 900;
+var canvasScale = 3;
 
 $(function() {
     // フォントの読み込み。
     loadFont("soukou","装甲明朝","url(fonts/SoukouMincho-Font/SoukouMincho.ttf)");
     loadFont("LanobePOP","ラノベPOP","url(fonts/LanobePOPv2/LightNovelPOPv2.otf)");
     loadFont("ToronoGlitchSans","瀞ノグリッチ黒体","url(fonts/ToronoGlitchSans/ToronoGlitchSansH2.otf)");
-    loadFont("KouzanMouhitu","衡山毛筆フォント","url(fonts/KouzanMouhituFontOTF/KouzanMouhituFontOTF.otf)");
+    loadFont("KouzanMouhitu","青柳隷書しも","url(fonts/aoyagireisyosimo/aoyagireisyosimo_otf_2_01.otf)");
+    loadFont("misaki8bit","美咲ゴシック(8bit)","url(fonts/misaki8bit/misaki_gothic_2nd.ttf)");
+    loadFont("CHIKARA","851チカラヅヨク","url(fonts/851CHIKARA-DZUYOKU/851CHIKARA-DZUYOKU_kanaA_004.ttf)");
+    loadFont("akabara-cinderella","赤薔薇シンデレラ","url(fonts/MODI_akabara-cinderella/akabara-cinderella.ttf)");
     // ↑ 新たなフォントはここに追加する。
 
     loadBackground("https://hhotatea.github.io/TRPGDisplayMaker/sample/1499176.jpg");
-    resetCanvas();
+    draw.resetCanvas(canvasWidth,canvasHeight,canvasScale);
 });
 
-async function loadBackground(url)
-{
+async function loadBackground(url) {
     // 初期背景画像の読み込み
     backGround = await getIconPicture(url);
 }
 
 async function loadFont(id,name,url){
-    let font = new FontFace(id,url);
+    var font = new FontFace(id,url);
     font.load().then(function (fs) {
         document.fonts.add(fs);
         $("#fontSelect").append('<option value="'+id+'"> <font face="'+id+'">'+name+'</font> </option>');
@@ -103,7 +51,8 @@ async function loadFont(id,name,url){
 
 // #region input
 $('#fontSelect').change(function() {
-    font = $('option:selected').val();
+    var font = $('option:selected').val();
+    draw.setFont(font);
     drawCanvas();
 })
 
@@ -131,8 +80,8 @@ $('#bgInput').change(function(){
     fr.onload = function(evt) {
         backGround.src = evt.target.result;
         backGround.onload = function() {
-            drawBackGroundIO();
-            drawCanvas();
+            draw.drawBackGroundIO();
+            draw.drawCanvas();
         }
     }
     fr.readAsDataURL(file);
@@ -153,6 +102,10 @@ async function getData(){
             $("#nameInput").val(name);
             $("#furiganaInput").val(furigana);
         }
+        // 読み込み内容に合わせての調整。
+        var r = drawNameIO();
+        nameRect.x += (nameRect.w-r.w)/2;
+        $("#namesXInput").val(nameRect.x)
     }catch(e){
         console.log(e);
     }
@@ -200,71 +153,13 @@ async function getData(){
         console.log(e);
     }
 }
-
-function perseSkills(command) {
-    if(command.includes("CC"))
-    {
-        return command.match(/^CCB?<=(\d+) 【(.*?)】$/gm)?.map(item =>{
-            // 正規表現で、ラベルと技能値を分解
-            var r = /^CCB?<=(\d+) 【(.*?)】$/.exec(item);
-            return {"label":r[2],"value":Number(r[1])};
-        }).filter(item=>{
-            // フィルターに一致する項目は排除
-            return commandFilter.every(f => f != item["label"]);
-        }).sort(function(a,b){
-            // 技能値の高い順に並べ替え
-            if(a["value"] < b["value"]) return 1;
-            if(a["value"] > b["value"]) return -1;
-            return 0;
-        });
-    }
-    if(command.includes("DM"))
-    {
-        return command.match(/^(\d)DM<=(\d) 〈(.*)〉$/gm)?.map(item =>{
-            // 正規表現で、ラベルと技能値を分解
-            var r = /^(\d)DM<=(\d) 〈(.*)〉$/.exec(item);
-            return {"label":r[3],"value":Number(r[2])};
-        }).filter(item=>{
-            // フィルターに一致する項目は排除
-            return commandFilter.every(f => f != item["label"]);
-        }).sort(function(a,b){
-            // 技能値の高い順に並べ替え
-            if(a["value"] < b["value"]) return 1;
-            if(a["value"] > b["value"]) return -1;
-            return 0;
-        });
-    }
-    return [];
-}
-
-function perseNameFurigana(name){
-    var r = /(.*?)\s?[(（](.*?)[)）]/.exec(name);
-    if(r != null) {
-        // ふり仮名があった場合
-        return [r[1],r[2]]
-    }
-    return [name,""]
-}
-
-// キャラクター立ち絵の描写
-async function getIconPicture(url){
-    var image = new Image();
-    if(url == "") return image;
-    return new Promise(resolve =>{
-        image.onload = function() {
-            resolve(image);
-        }
-        image.crossOrigin = "anonymous";
-        image.src = url;
-    })
-}
 // #endregion
 
 // #region touch
 // これもグローバル変数だけど、このブロックでしか使わないのでここに配置。
-grabFlg = 0;
-grabRelativeX = 0
-grabRelativeY = 0
+var grabFlg = 0;
+var grabRelativeX = 0
+var grabRelativeY = 0
 
 // マウスでドラッグした時に、オブジェクトを移動させる。
 $("#preview").mousedown(function(e){
@@ -321,43 +216,6 @@ $("#preview").mousedown(function(e){
             break;
     }
 });
-// canvas.addEventListener('touchstart',function(e){
-//     if(grabFlg != 0) return;
-//     var pos = [e.changedTouches[0].clientX*canvasScale,e.changedTouches[0].clientY*canvasScale];
-//     if(statusRect.contain(pos[0],pos[1])){
-//         e.preventDefault();
-//         grabFlg = 1;
-//         [grabRelativeX,grabRelativeY] = statusRect.pos(pos[0],pos[1]);
-//     }else if(skillsRect.contain(pos[0],pos[1])){
-//         e.preventDefault();
-//         grabFlg = 2;
-//         [grabRelativeX,grabRelativeY] = skillsRect.pos(pos[0],pos[1]);
-//     }
-// });
-// canvas.addEventListener('touchend',function(e){
-//     if(e.changedTouches.length != 0) return;
-//     grabFlg = 0; // マウス押下終了
-//     drawCanvas();
-// });
-// canvas.addEventListener('touchmove',function(e){
-//     var pos = [e.changedTouches[0].clientX*canvasScale,e.changedTouches[0].clientY*canvasScale];
-//     switch(grabFlg){
-//         case 0:
-//             break;
-//         case 1:
-//             e.preventDefault();
-//             statusRect.x = pos[0]-grabRelativeX;
-//             statusRect.y = pos[1]-grabRelativeY;
-//             statusRect = drawStatus(getData()["params"],statusRect.x,statusRect.y,40);
-//             break;
-//         case 2:
-//             e.preventDefault();
-//             skillsRect.x = pos[0]-grabRelativeX;
-//             skillsRect.y = pos[1]-grabRelativeY;
-//             skillsRect = drawSkills(getData()["commands"],skillsRect.x,skillsRect.y,40);
-//             break;
-//     }
-// });
 // #endregion
 
 // #region drawIO
@@ -365,7 +223,7 @@ async function drawCanvas(){
     drawCharadatas();
 }
 async function reloadCanvas(){
-    resetCanvas();
+    draw.resetCanvas(canvasWidth,canvasHeight,canvasScale);
     await getData();
     drawCharadatas();
 }
@@ -404,9 +262,9 @@ function drawCharadatas(){
     }
 }
 function drawBackGroundIO(){
-    resetCanvas($("#bgColor").val());
+    draw.resetCanvas(canvasWidth,canvasHeight,canvasScale,$("#bgColor").val());
     if($("#bgToggle").prop('checked')){
-        drawBackGround(backGround,
+        draw.drawBackGround(backGround,
             Number($("#bgXInput").val()),
             Number($("#bgYInput").val()),
             Number($("#bgSizeInput").val()));
@@ -414,18 +272,19 @@ function drawBackGroundIO(){
 }
 function drawNameIO(){
     if($("#namesToggle").prop('checked')){
-        return drawNameFurigana($("#nameInput").val(),$("#furiganaInput").val(),
+        return draw.drawNameFurigana($("#nameInput").val(),$("#furiganaInput").val(),
             Number($("#namesXInput").val()),
             Number($("#namesYInput").val()),
             Number($("#namesSizeInput").val()),
             $("#nameTextColor").val(),
-            $("#nameShadowColor").val());
+            $("#nameShadowColor").val(),
+            Number($("#nameOutline").val()));
     }
     return new Rect(0,0,1,1);
 }
 function drawStatusIO(){
     if($("#statusToggle").prop('checked')){
-        return drawParams(JSON.parse($("#statusInput").val()),
+        return draw.drawParams(JSON.parse($("#statusInput").val()),
             Number($("#statusXInput").val()),
             Number($("#statusYInput").val()),
             Number($("#statusSizeInput").val()),
@@ -434,25 +293,27 @@ function drawStatusIO(){
             colorcode2rgb($("#statusWindowColor").val(),$("#statusWindowAlpha").val()),
             Number($("#statusLabelWidth").val()),
             Number($("#statusValuelWidth").val()),
-            Number($("#statusMargin").val()));
+            Number($("#statusMargin").val()),
+            Number($("#statusOutline").val()));
     }
     return new Rect(0,0,1,1);
 }
 function drawHudIO(){
     if($("#hudToggle").prop('checked')){
-        return drawHub(JSON.parse($("#hudInput").val()),
+        return draw.drawHub(JSON.parse($("#hudInput").val()),
             Number($("#hudXInput").val()),
             Number($("#hudYInput").val()),
             Number($("#hudSizeInput").val()),
             $("#hudTextColor").val(),
             $("#hudShadowColor").val(),
-            colorcode2rgb($("#hudWindowColor").val(),$("#hudWindowAlpha").val()));
+            colorcode2rgb($("#hudWindowColor").val(),$("#hudWindowAlpha").val()),
+            0.25,Number($("#hudOutline").val()));
     }
     return new Rect(0,0,1,1);
 }
 function drawSkillsIO(){
     if($("#skillsToggle").prop('checked')){
-        return drawSkills(JSON.parse($("#skillsInput").val()),
+        return draw.drawSkills(JSON.parse($("#skillsInput").val()),
             Number($("#skillsXInput").val()),
             Number($("#skillsYInput").val()),
             Number($("#skillsSizeInput").val()),
@@ -462,246 +323,20 @@ function drawSkillsIO(){
             Number($("#skillsLabelWidth").val()),
             Number($("#skillsValuelWidth").val()),
             Number($("#skillsMargin").val()),
-            Number($("#skillsSpace").val()));
+            Number($("#skillsSpace").val()),
+            Number($("#skillsOutline").val()));
     }
     return new Rect(0,0,1,1);
 }
 function drawIconIO(){
     if($("#iconToggle").prop('checked')){
-        return drawIconPicture(iconImage,
+        return draw.drawIconPicture(iconImage,
             Number($("#iconXInput").val()),
             Number($("#iconYInput").val()),
             Number($("#iconSizeInput").val()),
-            $("#iconShadowColor").val());
+            $("#iconShadowColor").val(),
+            Number($("#iconOutline").val()));
     }
     return new Rect(0,0,1,1);
-}
-// #endregion
-
-// #region drawFunc
-function resetCanvas(color = "#ccc"){
-    canvas.width = 1200;
-    canvas.height = 900;
-    canvas.style.width = canvas.width/canvasScale+`px`;
-    canvas.style.height = canvas.height/canvasScale+`px`;
-    ctx.beginPath();
-    ctx.fillStyle = color;
-    ctx.fillRect(0, 0, 1200, 900);
-}
-// 背景画像の描写
-function drawBackGround(image,posx,posy,size){
-    if(!image) return;
-    var cnvsH = 900;
-    var cnvsW = cnvsH * image.naturalWidth / image.naturalHeight;
-    if(cnvsW < canvas.width)
-    {
-        cnvsW = 1200;
-        cnvsH = cnvsW * image.naturalHeight / image.naturalWidth;
-    }
-    ctx.drawImage(image, (1200-cnvsW)/2+posx, (900-cnvsH)/2+posy, cnvsW*size/100, cnvsH*size/100);
-}
-
-// キャラクター立ち絵の描写
-function drawIconPicture(image,posx,posy,size,shadow){
-    if(!image) return new Rect(posx, posy, 0, 0);
-    var cnvsH = 900;
-    var cnvsW = cnvsH * image.naturalWidth / image.naturalHeight;
-    if(cnvsW > canvas.width)
-    {
-        cnvsW = 1200;
-        cnvsH = cnvsW * image.naturalHeight / image.naturalWidth;
-    }
-    ctx.shadowColor = shadow;
-    ctx.shadowOffsetX = 15;
-    ctx.shadowOffsetY = 15;
-    ctx.drawImage(image, posx, posy, cnvsW*(size/100), cnvsH*(size/100));
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-    return new Rect(posx, posy, cnvsW*(size/100), cnvsH*(size/100));
-}
-
-// ふり仮名と名前の描写
-function drawNameFurigana(name,furigana,posx,posy,size,color,shadow)
-{
-    return drawNameFuriganaHorizon(name,furigana,posx,posy,size,color,shadow);
-}
-function drawNameFuriganaHorizon(name,furigana,posx,posy,size,color,shadow)
-{
-    ctx.fillStyle = color;
-    ctx.shadowColor = shadow;
-    // 名前の描写
-    ctx.font = size + 'px ' + font ;
-    ctx.textBaseline = 'hanging';
-    ctx.textAlign = 'left';
-    var width = drawChara(name,posx, posy,3);
-
-    var fsize = size/3;
-    ctx.font = fsize + 'px ' + font ;
-    ctx.textBaseline = 'ideographic';
-    ctx.textAlign = 'center';
-    if(ctx.measureText(furigana).width > width){
-        // ふり仮名の描写
-        drawChara(furigana,posx + width/2, posy-size/10,1,width);
-    }
-    else{
-        // ふり仮名の描写
-        furigana.split('').forEach(function(val,index,ar){
-            drawChara(val,posx + size/4 + (width-size/2) * index/(ar.length-1), posy-size/10,1);
-        });
-    }
-    return new Rect(posx,posy,width,size*1.5);
-}
-function drawNameFuriganaVertical(name,furigana,posx,posy,size,color,shadow)
-{
-    ctx.fillStyle = color;
-    ctx.shadowColor = shadow;
-    // 名前の描写
-    ctx.font = size + 'px ' + font ;
-    ctx.textBaseline = 'hanging';
-    ctx.textAlign = 'left';
-    name.split('').forEach(function(val,index,ar){
-        drawChara(val,posx, posy+size*index,1);
-    });
-
-    ctx.font = size/3 + 'px ' + font ;
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = 'center';
-    furigana.split('').forEach(function(val,index,ar){
-        drawChara(val,posx+size*1.25, posy + (size*name.length-size*0.5) * index/(ar.length-1),1);
-    });
-    return new Rect(posx,posy,size,size*name.length);
-}
-
-function drawChara(text,posx,posy,distance,width){
-    for (let i = -distance; i <= distance; i+=1){
-        for (let j = -distance; j <= distance; j+=1){
-            ctx.shadowOffsetX = i;
-            ctx.shadowOffsetY = j;
-            ctx.fillText(text, posx , posy, width);
-        }
-    }
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-    return ctx.measureText(text).width;
-}
-
-function getRect(status,posx,posy,size,labelWidth,valueWidth,margin) {
-    return new Rect(posx, posy, 
-        size*margin*2 + size*labelWidth + size*0.5 + size*valueWidth, 
-        size*margin*3 + size*(1+margin)*(status.length) - size*0.5);
-}
-
-// ステータス系の描写
-function drawStatus(status,posx,posy,size,color,shadow,labelWidth = 2,valueWidth = 1,margin = 0.25,distance = 0) {
-    status.forEach(function(val,index,ar){
-        ctx.font = size + 'px ' + font ;
-        ctx.fillStyle = color;
-        ctx.shadowColor = shadow;
-        ctx.textBaseline = 'hanging';
-        ctx.textAlign = 'center';
-        drawChara(val["label"], 
-            posx + size*margin + size*labelWidth/2, 
-            posy + size*margin*1.5 + size*(1+margin)*index, 
-            distance,size * labelWidth);
-        ctx.font = size + 'px ' + font ;
-        drawChara(val["value"], 
-            posx + size*margin + size*labelWidth + size*0.5 + size*valueWidth/2, 
-            posy + size*margin*1.5 + size*(1+margin)*index, 
-            distance,size*valueWidth);
-    });
-    return getRect(status,posx,posy,size,labelWidth,valueWidth,margin);
-}
-
-
-function drawParams(cs,posx,posy,size,color,shadow,window,labelWidth = 2,valueWidth = 1,margin = 0.25,space = 0.25) {
-    return drawParamsHorizon(cs,posx,posy,size,color,shadow,window,labelWidth,valueWidth,margin,space);
-}
-// 技能の描写
-function drawParamsVertical(cs,posx,posy,size,color,shadow,window,labelWidth,valueWidth,margin,space) {
-    var r = new Rect(posx,posy,0,0);
-    cs.forEach(function(val,index,ar){
-        var a = getRect( val, r.x+r.w+size*space, r.y, size, labelWidth, valueWidth, margin);
-        r = r.extend(a);
-        ctx.beginPath();
-        ctx.fillStyle = window;
-        ctx.fillRect(a.x,a.y,a.w,a.h);
-    });
-    var r = new Rect(posx,posy,0,0);
-    cs.forEach(function(val,index,ar){
-        var a = drawStatus( val, r.x+r.w+size*space, r.y, size, color, shadow, labelWidth, valueWidth, margin);
-        r = r.extend(a);
-    });
-    return r;
-}
-// 技能の描写
-function drawParamsHorizon(cs,posx,posy,size,color,shadow,window,labelWidth,valueWidth,margin,space) {
-    var r = new Rect(posx,posy,0,0);
-    cs.forEach(function(val,index,ar){
-        var a = getRect( val, r.x, r.y+r.h+size*space, size, labelWidth, valueWidth, margin);
-        r = r.extend(a);
-        ctx.beginPath();
-        ctx.fillStyle = window;
-        ctx.fillRect(a.x,a.y,a.w,a.h);
-    });
-    var r = new Rect(posx,posy,0,0);
-    cs.forEach(function(val,index,ar){
-        var a = drawStatus( val, r.x, r.y+r.h+size*space, size, color, shadow, labelWidth, valueWidth, margin);
-        r = r.extend(a);
-    });
-    return r;
-}
-
-// 技能の描写
-function drawSkills(cs,posx,posy,size,color,shadow,window,labelWidth = 3,valueWidth = 1,margin = 0.25,space = 0.5) {
-    if(cs.length<7){
-        var r = getRect(cs,posx,posy,size,window,labelWidth,valueWidth,margin);
-        ctx.beginPath();
-        ctx.fillStyle = window;
-        ctx.fillRect(r.x,r.y,r.w,r.h);
-        drawStatus(cs,posx,posy,size,color,shadow,labelWidth,valueWidth,margin);
-        return r;
-    }else{
-        cs.length = Math.min(cs.length,20);
-        if(cs.length%2!=0) cs.length = cs.length-1;
-        var a = getRect(cs.slice(0,cs.length/2),posx,posy,size,labelWidth,valueWidth,margin);
-        var b = getRect(cs.slice(cs.length/2),posx+size*space+a.w,posy,size,labelWidth,valueWidth,margin);
-        var r = a.extend(b);
-
-        ctx.beginPath();
-        ctx.fillStyle = window;
-        ctx.fillRect(r.x,r.y,r.w,r.h);
-
-        drawStatus(cs.slice(0,cs.length/2),posx,posy,size,color,shadow,labelWidth,valueWidth,margin);
-        drawStatus(cs.slice(cs.length/2),posx+size*space+a.w,posy,size,color,shadow,labelWidth,valueWidth,margin);
-        return r;
-    }
-}
-
-// HP/MPの描写
-function drawHub(cs,posx,posy,size,color,shadow,window,margin = 0.25) {
-    var width = size * 1.75;
-    var r = new Rect(posx,posy,0,width);
-    cs.forEach(function(val,index,ar){
-        // 円の描写
-        ctx.fillStyle = window;
-        ctx.beginPath();
-        ctx.textBaseline = 'middle';
-        ctx.textAlign = 'center';
-        ctx.arc(r.x + r.w + width/2, r.y + r.h/2, width/2, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.fillStyle = color;
-        ctx.shadowColor = shadow;
-        ctx.textBaseline = 'middle';
-        ctx.textAlign = 'center';
-        ctx.font = size + 'px ' + font ;
-        drawChara(val["value"],r.x + r.w + width/2, r.y + r.h/2 + size*0.2, 2, width);
-        ctx.font = size/3 + 'px ' + font ;
-        drawChara(val["label"],r.x + r.w + width/2, r.y + r.h/2 - size*0.5, 1, width);
-
-        r.w += width + size*margin;
-    });
-    return r;
 }
 // #endregion

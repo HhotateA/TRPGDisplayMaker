@@ -1,0 +1,13 @@
+{
+    "scripts": {
+        "test": "jest"
+    },
+    "jest": {
+        "testMatch": [
+            "**/*.test.js"
+        ]
+    },
+    "devDependencies": {
+        "jest": "^24.8.0"
+    }
+}

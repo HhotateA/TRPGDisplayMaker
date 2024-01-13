@@ -26,7 +26,7 @@ $(function() {
     loadFont("akabara-cinderella","赤薔薇シンデレラ","url(fonts/MODI_akabara-cinderella/akabara-cinderella.ttf)");
     // ↑ 新たなフォントはここに追加する。
 
-    loadBackground("https://hhotatea.github.io/TRPGDisplayMaker/sample/1499176.jpg");
+    loadBackground("https://hhotatea.github.io/TRPGDisplayMaker/imgs/BGSample.jpg");
     draw.resetCanvas(canvasWidth,canvasHeight,canvasScale);
 });
 

@@ -6,7 +6,7 @@
 上のような、TRPGのディスプレイ画像を作成するためのWebアプリです。
 
 ## 使い方
-[GithubPages](https://hhotatea.github.io/TRPGDisplayMaker/)で動作を確認できます。
+[GithubPages](https://hhotatea.github.io/TRPGDisplayMaker/releases/)で動作を確認できます。
 1. ココフォリアへ出力可能な形式のJson形式の[キャラクターデータ](https://docs.ccfolia.com/developer-api/clipboard-api)を準備する。
 2. Webアプリ内のTextBoxにJsonを張り付ける。
 3. `キャラクターデータ読み込み`ボタンを押す。

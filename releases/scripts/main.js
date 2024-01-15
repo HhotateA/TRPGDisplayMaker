@@ -172,32 +172,45 @@ var grabFlg = 0;
 var grabRelativeX = 0
 var grabRelativeY = 0
 canvas.addEventListener("mousedown",e => {
+    if(grabFlg != 0) return;
     canvasDown(e.offsetX*canvasScale,e.offsetY*canvasScale);
 });
 canvas.addEventListener("mouseup",e => {
+    if(grabFlg == 0) return;
     canvasUp();
 });
 canvas.addEventListener("mousemove",e => {
+    if(grabFlg == 0) return;
     canvasMove(e.offsetX*canvasScale,e.offsetY*canvasScale);
 });
 canvas.addEventListener("touchstart",e => {
+    if(grabFlg != 0) return;
     e.preventDefault();
     var touches = e.changedTouches;
-    canvasDown(touches[0].pageX*canvasScale,touches[0].pageY*canvasScale);
+    var r = e.target.getBoundingClientRect();
+    var offsetX = (touches[0].pageX - r.left); 
+    var offsetY = (touches[0].pageY - r.top);
+    canvasDown(offsetX*canvasScale,offsetY*canvasScale);
 });
 canvas.addEventListener("touchend",e => {
+    if(grabFlg == 0) return;
     canvasUp();
 });
 canvas.addEventListener("touchcancel",e => {
+    if(grabFlg == 0) return;
     canvasUp();
 });
 canvas.addEventListener("touchmove",e => {
+    if(grabFlg == 0) return;
     e.preventDefault();
     var touches = e.changedTouches;
-    canvasMove(touches[0].pageX*canvasScale,touches[0].pageY*canvasScale);
+    var r = e.target.getBoundingClientRect();
+    var offsetX = (touches[0].pageX - r.left); 
+    var offsetY = (touches[0].pageY - r.top);
+    canvasMove(offsetX*canvasScale,offsetY*canvasScale);
 });
+
 function canvasDown(posx,posy) {
-    if(grabFlg != 0) return;
     if(nameRect.contain(posx,posy) && $("#namesToggle").prop('checked')){
         grabFlg = 1;
         [grabRelativeX,grabRelativeY] = nameRect.pos(posx,posy);
@@ -220,7 +233,6 @@ function canvasUp() {
     drawCanvas();
 }
 function canvasMove(posx,posy) {
-    console.log(posx+":"+posy);
     switch(grabFlg){
         case 0:
             break;

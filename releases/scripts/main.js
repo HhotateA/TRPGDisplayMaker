@@ -220,6 +220,7 @@ function canvasUp() {
     drawCanvas();
 }
 function canvasMove(posx,posy) {
+    console.log(posx+":"+posy);
     switch(grabFlg){
         case 0:
             break;

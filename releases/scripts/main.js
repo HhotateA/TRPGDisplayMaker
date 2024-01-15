@@ -87,10 +87,12 @@ $(window).resize(function(){
     resizeCanvas();
 });
 function resizeCanvas(){
-    if(document.body.clientWidth > 925){
-        canvasScale = canvasWidth/(document.body.clientWidth-500);
+    if(document.documentElement.clientWidth > 925){
+        var a = canvasWidth/(document.documentElement.clientWidth-525);
+        var b = canvasHeight/(document.documentElement.clientHeight*0.75);
+        canvasScale = Math.max(a,b);
     }else{
-        canvasScale = canvasWidth/(document.body.clientWidth-50);
+        canvasScale = canvasWidth/(document.documentElement.clientWidth-50);
     }
     canvas.style.width = canvasWidth/canvasScale+`px`;
     canvas.style.height = canvasHeight/canvasScale+`px`;
@@ -169,62 +171,85 @@ async function getData(){
 var grabFlg = 0;
 var grabRelativeX = 0
 var grabRelativeY = 0
-
-// マウスでドラッグした時に、オブジェクトを移動させる。
-$("#preview").mousedown(function(e){
+canvas.addEventListener("mousedown",e => {
+    canvasDown(e.offsetX*canvasScale,e.offsetY*canvasScale);
+});
+canvas.addEventListener("mouseup",e => {
+    canvasUp();
+});
+canvas.addEventListener("mousemove",e => {
+    canvasMove(e.offsetX*canvasScale,e.offsetY*canvasScale);
+});
+canvas.addEventListener("touchstart",e => {
+    e.preventDefault();
+    var touches = e.changedTouches;
+    canvasDown(touches[0].pageX*canvasScale,touches[0].pageY*canvasScale);
+});
+canvas.addEventListener("touchend",e => {
+    canvasUp();
+});
+canvas.addEventListener("touchcancel",e => {
+    canvasUp();
+});
+canvas.addEventListener("touchmove",e => {
+    e.preventDefault();
+    var touches = e.changedTouches;
+    canvasMove(touches[0].pageX*canvasScale,touches[0].pageY*canvasScale);
+});
+function canvasDown(posx,posy) {
     if(grabFlg != 0) return;
-    var pos = [e.offsetX*canvasScale,e.offsetY*canvasScale];
-    if(nameRect.contain(pos[0],pos[1]) && $("#namesToggle").prop('checked')){
+    if(nameRect.contain(posx,posy) && $("#namesToggle").prop('checked')){
         grabFlg = 1;
-        [grabRelativeX,grabRelativeY] = nameRect.pos(pos[0],pos[1]);
-    }else if(hudRect.contain(pos[0],pos[1]) && $("#hudToggle").prop('checked')){
+        [grabRelativeX,grabRelativeY] = nameRect.pos(posx,posy);
+    }else if(hudRect.contain(posx,posy) && $("#hudToggle").prop('checked')){
         grabFlg = 2;
-        [grabRelativeX,grabRelativeY] = hudRect.pos(pos[0],pos[1]);
-    }else if(statusRect.contain(pos[0],pos[1]) && $("#statusToggle").prop('checked')){
+        [grabRelativeX,grabRelativeY] = hudRect.pos(posx,posy);
+    }else if(statusRect.contain(posx,posy) && $("#statusToggle").prop('checked')){
         grabFlg = 3;
-        [grabRelativeX,grabRelativeY] = statusRect.pos(pos[0],pos[1]);
-    }else if(skillsRect.contain(pos[0],pos[1]) && $("#skillsToggle").prop('checked')){
+        [grabRelativeX,grabRelativeY] = statusRect.pos(posx,posy);
+    }else if(skillsRect.contain(posx,posy) && $("#skillsToggle").prop('checked')){
         grabFlg = 4;
-        [grabRelativeX,grabRelativeY] = skillsRect.pos(pos[0],pos[1]);
-    }else if(iconRect.contain(pos[0],pos[1]) && $("#iconToggle").prop('checked')){
+        [grabRelativeX,grabRelativeY] = skillsRect.pos(posx,posy);
+    }else if(iconRect.contain(posx,posy) && $("#iconToggle").prop('checked')){
         grabFlg = 5;
-        [grabRelativeX,grabRelativeY] = iconRect.pos(pos[0],pos[1]);
+        [grabRelativeX,grabRelativeY] = iconRect.pos(posx,posy);
     }
-}).mouseup(function(e){
+}
+function canvasUp() {
     grabFlg = 0;
     drawCanvas();
-}).mousemove(function(e){
-    var pos = [e.offsetX*canvasScale,e.offsetY*canvasScale];
+}
+function canvasMove(posx,posy) {
     switch(grabFlg){
         case 0:
             break;
         case 1:
-            $("#namesXInput").val(pos[0]-grabRelativeX);
-            $("#namesYInput").val(pos[1]-grabRelativeY);
+            $("#namesXInput").val(posx-grabRelativeX);
+            $("#namesYInput").val(posy-grabRelativeY);
             nameRect = drawNameIO();
             break;
         case 2:
-            $("#hudXInput").val(pos[0]-grabRelativeX);
-            $("#hudYInput").val(pos[1]-grabRelativeY);
+            $("#hudXInput").val(posx-grabRelativeX);
+            $("#hudYInput").val(posy-grabRelativeY);
             hudRect = drawHudIO();
             break;
         case 3:
-            $("#statusXInput").val(pos[0]-grabRelativeX);
-            $("#statusYInput").val(pos[1]-grabRelativeY);
+            $("#statusXInput").val(posx-grabRelativeX);
+            $("#statusYInput").val(posy-grabRelativeY);
             statusRect = drawStatusIO();
             break;
         case 4:
-            $("#skillsXInput").val(pos[0]-grabRelativeX);
-            $("#skillsYInput").val(pos[1]-grabRelativeY);
+            $("#skillsXInput").val(posx-grabRelativeX);
+            $("#skillsYInput").val(posy-grabRelativeY);
             skillsRect = drawSkillsIO();
             break;
         case 5:
-            $("#iconXInput").val(pos[0]-grabRelativeX);
-            $("#iconYInput").val(pos[1]-grabRelativeY);
+            $("#iconXInput").val(posx-grabRelativeX);
+            $("#iconYInput").val(posy-grabRelativeY);
             iconRect = drawIconIO();
             break;
     }
-});
+}
 // #endregion
 
 // #region drawIO

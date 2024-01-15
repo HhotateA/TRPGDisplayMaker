@@ -113,10 +113,6 @@ async function getData(){
             $("#nameInput").val(name);
             $("#furiganaInput").val(furigana);
         }
-        // 読み込み内容に合わせての調整。
-        var r = drawNameIO();
-        nameRect.x += (nameRect.w-r.w)/2;
-        $("#namesXInput").val(nameRect.x)
     }catch(e){
         console.log(e);
     }
@@ -265,6 +261,105 @@ function canvasMove(posx,posy) {
 }
 // #endregion
 
+// #region randomSet
+function randomLayout(){
+    var op = $('#fontSelect').children();
+    var opv = op.eq(Math.ceil( Math.random() * (op.length-1) )).val();
+    switch(Math.floor(Math.random()*5)){
+        case 0:
+            $('#fontSelect').val(opv).change();
+            $("#iconXInput").val(0);
+            $("#iconYInput").val(0);
+            $("#iconSizeInput").val(100);
+            $("#statusXInput").val(25);
+            $("#statusYInput").val(300);
+            $("#statusSizeInput").val(40);
+            $("#skillsXInput").val(725);
+            $("#skillsYInput").val(50);
+            $("#skillsSizeInput").val(40);
+            $("#hudXInput").val(70);
+            $("#hudYInput").val(775);
+            $("#hudSizeInput").val(60);
+            $("#namesXInput").val(800-drawNameIO().w/2);
+            $("#namesYInput").val(725);
+            $("#namesSizeInput").val(150);
+            break;
+        case 1:
+            $('#fontSelect').val(opv).change();
+            $("#iconXInput").val(canvas.width-drawIconIO().w);
+            $("#iconYInput").val(0);
+            $("#iconSizeInput").val(100);
+            $("#statusXInput").val(1025);
+            $("#statusYInput").val(325);
+            $("#statusSizeInput").val(40);
+            $("#skillsXInput").val(70);
+            $("#skillsYInput").val(70);
+            $("#skillsSizeInput").val(40);
+            $("#hudXInput").val(775);
+            $("#hudYInput").val(775);
+            $("#hudSizeInput").val(60);
+            $("#namesXInput").val(25);
+            $("#namesYInput").val(725);
+            $("#namesSizeInput").val(150);
+            break;
+        case 2:
+            $('#fontSelect').val(opv).change();
+            $("#iconXInput").val(canvas.width/2-drawIconIO().w/2);
+            $("#iconYInput").val(0);
+            $("#iconSizeInput").val(100);
+            $("#statusXInput").val(850);
+            $("#statusYInput").val(75);
+            $("#statusSizeInput").val(40);
+            $("#skillsXInput").val(35);
+            $("#skillsYInput").val(450);
+            $("#skillsSizeInput").val(40);
+            $("#hudXInput").val(825);
+            $("#hudYInput").val(775);
+            $("#hudSizeInput").val(60);
+            $("#namesXInput").val(500);
+            $("#namesYInput").val(600);
+            $("#namesSizeInput").val(150);
+            break;
+        case 3:
+            $('#fontSelect').val(opv).change();
+            $("#iconXInput").val(canvas.width-drawIconIO().w);
+            $("#iconYInput").val(0);
+            $("#iconSizeInput").val(100);
+            $("#statusXInput").val(75);
+            $("#statusYInput").val(400);
+            $("#statusSizeInput").val(40);
+            $("#skillsXInput").val(300);
+            $("#skillsYInput").val(450);
+            $("#skillsSizeInput").val(40);
+            $("#hudXInput").val(800);
+            $("#hudYInput").val(775);
+            $("#hudSizeInput").val(60);
+            $("#namesXInput").val(375-drawNameIO().w/2);
+            $("#namesYInput").val(175);
+            $("#namesSizeInput").val(150);
+            break;
+        case 3:
+            $('#fontSelect').val(opv).change();
+            $("#iconXInput").val(0);
+            $("#iconYInput").val(0);
+            $("#iconSizeInput").val(100);
+            $("#statusXInput").val(50);
+            $("#statusYInput").val(450);
+            $("#statusSizeInput").val(40);
+            $("#skillsXInput").val(775);
+            $("#skillsYInput").val(450);
+            $("#skillsSizeInput").val(40);
+            $("#hudXInput").val(350);
+            $("#hudYInput").val(750);
+            $("#hudSizeInput").val(60);
+            $("#namesXInput").val(850-drawNameIO().w/2);
+            $("#namesYInput").val(200);
+            $("#namesSizeInput").val(150);
+            break;
+    }
+}
+// #endregion
+
 // #region drawIO
 async function drawCanvas(){
     drawCharadatas();
@@ -272,6 +367,7 @@ async function drawCanvas(){
 async function reloadCanvas(){
     draw.resetCanvas(canvasWidth,canvasHeight);
     await getData();
+    randomLayout();
     drawCharadatas();
 }
 function drawCharadatas(){
@@ -371,7 +467,9 @@ function drawSkillsIO(){
             Number($("#skillsValuelWidth").val()),
             Number($("#skillsMargin").val()),
             Number($("#skillsSpace").val()),
-            Number($("#skillsOutline").val()));
+            Number($("#skillsOutline").val()),
+            Number($("#skillsColumnsInput").val()),
+            Number($("#skillsRowsInput").val()));
     }
     return new Rect(0,0,1,1);
 }

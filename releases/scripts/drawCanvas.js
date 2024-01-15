@@ -23,10 +23,10 @@ class DrawCanvas {
         return this.ctx.measureText(text).width;
     }
     
-    getRect(status,posx,posy,size,labelWidth,valueWidth,margin) {
+    getRect(length,posx,posy,size,labelWidth,valueWidth,margin) {
         return new Rect(posx, posy, 
             size*margin*2 + size*labelWidth + size*0.5 + size*valueWidth, 
-            size*margin*3 + size*(1+margin)*(status.length) - size*0.5);
+            size*margin*3 + size*(1+margin)*(length) - size*0.5);
     }
 
     // ステータス系の描写
@@ -47,12 +47,14 @@ class DrawCanvas {
                 posy + size*margin*1.5 + size*(1+margin)*index, 
                 distance,size*valueWidth);
         },this);
-        return this.getRect(status,posx,posy,size,labelWidth,valueWidth,margin);
+        return this.getRect(status.length,posx,posy,size,labelWidth,valueWidth,margin);
     }
     
-    resetCanvas(width,height,color = "#ccc"){
+    resetCanvas(width,height,scale,color = "#ccc"){
         this.canvas.width = width;
         this.canvas.height = height;
+        this.canvas.style.width = width/scale+`px`;
+        this.canvas.style.height = height/scale+`px`;
         this.ctx.beginPath();
         this.ctx.fillStyle = color;
         this.ctx.fillRect(0, 0, 1200, 900);
@@ -158,7 +160,7 @@ class DrawCanvas {
     drawParamsVertical(cs,posx,posy,size,color,shadow,window,labelWidth,valueWidth,margin,space,distance) {
         var r = new Rect(posx,posy,0,0);
         cs.forEach(function(val,index,ar){
-            var a = this.getRect( val, r.x+r.w+size*space, r.y, size, labelWidth, valueWidth, margin);
+            var a = this.getRect( val.length, r.x+r.w+size*space, r.y, size, labelWidth, valueWidth, margin);
             r = r.extend(a);
             this.ctx.beginPath();
             this.ctx.fillStyle = window;
@@ -174,7 +176,7 @@ class DrawCanvas {
     drawParamsHorizon(cs,posx,posy,size,color,shadow,window,labelWidth,valueWidth,margin,space,distance) {
         var r = new Rect(posx,posy,0,0);
         cs.forEach(function(val,index,ar){
-            var a = this.getRect( val, r.x, r.y+r.h+size*space, size, labelWidth, valueWidth, margin);
+            var a = this.getRect( val.length, r.x, r.y+r.h+size*space, size, labelWidth, valueWidth, margin);
             r = r.extend(a);
             this.ctx.beginPath();
             this.ctx.fillStyle = window;
@@ -189,29 +191,43 @@ class DrawCanvas {
     }
     
     // 技能の描写
-    drawSkills(cs,posx,posy,size,color,shadow,window,labelWidth,valueWidth,margin,space,distance) {
-        if(cs.length<7){
-            var r = this.getRect(cs,posx,posy,size,window,labelWidth,valueWidth,margin);
+    drawSkills(cs,posx,posy,size,color,shadow,window,labelWidth,valueWidth,margin,space,distance,columns = 7,rows = 2) {
+        if(cs.length < columns){
+            var r = this.getRect(cs.length,posx,posy,size,window,labelWidth,valueWidth,margin);
             this.ctx.beginPath();
             this.ctx.fillStyle = window;
             this.ctx.fillRect(r.x,r.y,r.w,r.h);
             this.drawStatus(cs,posx,posy,size,color,shadow,labelWidth,valueWidth,margin,distance);
             return r;
-        }else{
-            cs.length = Math.min(cs.length,20);
-            if(cs.length%2!=0) cs.length = cs.length-1;
-            var a = this.getRect(cs.slice(0,cs.length/2),posx,posy,size,labelWidth,valueWidth,margin);
-            var b = this.getRect(cs.slice(cs.length/2),posx+size*space+a.w,posy,size,labelWidth,valueWidth,margin);
-            var r = a.extend(b);
-    
-            this.ctx.beginPath();
-            this.ctx.fillStyle = window;
-            this.ctx.fillRect(r.x,r.y,r.w,r.h);
-    
-            this.drawStatus(cs.slice(0,cs.length/2),posx,posy,size,color,shadow,labelWidth,valueWidth,margin,distance);
-            this.drawStatus(cs.slice(cs.length/2),posx+size*space+a.w,posy,size,color,shadow,labelWidth,valueWidth,margin,distance);
-            return r;
         }
+        if(cs.length < rows){
+            rows = cs.length;
+        }
+        cs.length -= cs.length%rows;
+        columns = Math.min(cs.length/rows,columns);
+        var r = new Rect(posx,posy,0,0);
+        for(var i = 0; i < rows; i++) {
+            var a = this.getRect(
+                    columns,
+                    posx + r.w,
+                    posy,
+                    size,labelWidth,valueWidth,margin);
+            r = r.extend(a);
+        }
+        this.ctx.beginPath();
+        this.ctx.fillStyle = window;
+        this.ctx.fillRect(r.x,r.y,r.w,r.h);
+        var r = new Rect(posx,posy,0,0);
+        for(var i = 0; i < rows; i++) {
+            var a = this.drawStatus(
+                    cs.slice(0,columns),
+                    posx + r.w,
+                    posy,
+                    size,color,shadow,labelWidth,valueWidth,margin,distance);
+            cs = cs.slice(columns);
+            r = r.extend(a);
+        }
+        return r;
     }
     
     // HP/MPの描写

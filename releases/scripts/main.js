@@ -24,6 +24,7 @@ $(function() {
     loadFont("misaki8bit","美咲ゴシック(8bit)","url(https://hhotatea.github.io/TRPGDisplayMaker/releases/fonts/misaki8bit/misaki_gothic_2nd.ttf)");
     loadFont("CHIKARA","851チカラヅヨク","url(https://hhotatea.github.io/TRPGDisplayMaker/releases/fonts/851CHIKARA-DZUYOKU/851CHIKARA-DZUYOKU_kanaA_004.ttf)");
     loadFont("akabara-cinderella","赤薔薇シンデレラ","url(https://hhotatea.github.io/TRPGDisplayMaker/releases/fonts/MODI_akabara-cinderella/akabara-cinderella.ttf)");
+    loadFont("TachibanaFont","たちばなフォント","url(https://hhotatea.github.io/TRPGDisplayMaker/releases/fonts/TachibanaFont/TachibanaFont2024.ttf)");
     // ↑ 新たなフォントはここに追加する。
 
     loadBackground("https://hhotatea.github.io/TRPGDisplayMaker/imgs/BGSample.jpg");

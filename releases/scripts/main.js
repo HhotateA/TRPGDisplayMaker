@@ -17,13 +17,13 @@ var canvasScale = 1;
 
 $(function() {
     // フォントの読み込み。
-    loadFont("soukou","装甲明朝","url(fonts/SoukouMincho-Font/SoukouMincho.ttf)");
-    loadFont("LanobePOP","ラノベPOP","url(fonts/LanobePOPv2/LightNovelPOPv2.otf)");
-    loadFont("ToronoGlitchSans","瀞ノグリッチ黒体","url(fonts/ToronoGlitchSans/ToronoGlitchSansH2.otf)");
-    loadFont("KouzanMouhitu","青柳隷書しも","url(fonts/aoyagireisyosimo/aoyagireisyosimo_otf_2_01.otf)");
-    loadFont("misaki8bit","美咲ゴシック(8bit)","url(fonts/misaki8bit/misaki_gothic_2nd.ttf)");
-    loadFont("CHIKARA","851チカラヅヨク","url(fonts/851CHIKARA-DZUYOKU/851CHIKARA-DZUYOKU_kanaA_004.ttf)");
-    loadFont("akabara-cinderella","赤薔薇シンデレラ","url(fonts/MODI_akabara-cinderella/akabara-cinderella.ttf)");
+    loadFont("soukou","装甲明朝","url(https://hhotatea.github.io/TRPGDisplayMaker/releases/fonts/SoukouMincho-Font/SoukouMincho.ttf)");
+    loadFont("LanobePOP","ラノベPOP","url(https://hhotatea.github.io/TRPGDisplayMaker/releases/fonts/LanobePOPv2/LightNovelPOPv2.otf)");
+    loadFont("ToronoGlitchSans","瀞ノグリッチ黒体","url(https://hhotatea.github.io/TRPGDisplayMaker/releases/fonts/ToronoGlitchSans/ToronoGlitchSansH2.otf)");
+    loadFont("KouzanMouhitu","青柳隷書しも","url(https://hhotatea.github.io/TRPGDisplayMaker/releases/fonts/aoyagireisyosimo/aoyagireisyosimo_otf_2_01.otf)");
+    loadFont("misaki8bit","美咲ゴシック(8bit)","url(https://hhotatea.github.io/TRPGDisplayMaker/releases/fonts/misaki8bit/misaki_gothic_2nd.ttf)");
+    loadFont("CHIKARA","851チカラヅヨク","url(https://hhotatea.github.io/TRPGDisplayMaker/releases/fonts/851CHIKARA-DZUYOKU/851CHIKARA-DZUYOKU_kanaA_004.ttf)");
+    loadFont("akabara-cinderella","赤薔薇シンデレラ","url(https://hhotatea.github.io/TRPGDisplayMaker/releases/fonts/MODI_akabara-cinderella/akabara-cinderella.ttf)");
     // ↑ 新たなフォントはここに追加する。
 
     loadBackground("https://hhotatea.github.io/TRPGDisplayMaker/imgs/BGSample.jpg");

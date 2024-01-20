@@ -1,6 +1,7 @@
-const scriptPaths = ["perseCommands.js","imageDownloader.js","rect.js","drawCanvas.js","main.js"];
-scriptPaths.forEach(function(val,index,ar){
-    var script = document.createElement('script');
-    script.src = "scripts/" + val;
-    document.head.appendChild(script);
-});
+var div = document.createElement('div');
+$.ajax({
+    url: 'https://hhotatea.github.io/TRPGDisplayMaker/releases/main.html',
+    success: function(data) {
+        $("#MainApp").append(data)
+    }
+  });
